@@ -1,0 +1,35 @@
+
+install kvm on ubuntu 20
+
+date : 5/21/2024
+
+ref : https://phoenixnap.com/kb/ubuntu-install-kvm
+https://phoenixnap.com/kb/how-to-install-a-gui-on-ubuntu
+
+# first enable nested virt on proxmox if it isn't already
+echo "options kvm-intel nested=1" > /etc/modprobe.d/kvm-intel.conf
+modprobe -r kvm-intel
+modprobe kvm-intel
+cat /sys/module/kvm_intel/parameters/nested
+
+# set the processor to host so it gets the kvm bits
+
+# optionally setup ubuntu desktop environment
+sudo apt install ubuntu-desktop
+sudo apt install vanilla-gnome-desktop vanilla-gnome-default-settings
+# reboot 
+
+# --- kvm setup ---------------
+
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+sudo adduser ‘username’ libvirt
+sudo adduser ‘username’ kvm
+
+# test 
+virsh list --all
+
+# add the gui tool
+sudo apt install virt-manager
+
+# launch virt-manager (log into server gui first)
+sudo virt-manager

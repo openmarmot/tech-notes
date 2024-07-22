@@ -1,0 +1,367 @@
+
+docker commands
+
+--notes--
+last update : Dec 2023
+
+--source--
+https://docs.docker.com/get-started/part2/#recap-and-cheat-sheet-optional
+
+https://docs.docker.com/engine/reference/builder/#usage
+
+https://docs.docker.com/compose/production/
+
+https://docs.docker.com/engine/swarm/swarm-tutorial/
+
+https://docs.docker.com/config/containers/logging/configure/#use-environment-variables-or-labels-with-logging-drivers
+
+
+hub.docker.com
+
+
+----------- general docker commands ---------------------
+
+
+# view the contents of the local image registry
+docker images
+
+#restart a stopped container
+docker restart CONTAINER_NAME
+
+#stop a container
+docker stop CONTAINER_NAME
+
+#attach to a running container
+docker attach CONTAINER_NAME
+
+---------- info commands -----------------------------------
+
+#docker version. Note that the api version is the important number
+Docker version
+
+# a ton of info
+Docker info
+
+#show docker processes (containers). useful for getting container IDs
+docker ps
+
+#show docker processes, and a history of recent processes
+docker ps -a
+
+#search docker hub for images
+docker search ubuntu
+
+#find out info about a image. this can also be done on a container
+Docker inspect repo:tag
+
+# see top for a container
+docker top CONTAINER-NAME
+
+#see live stats
+docker stats CONTAINER-NAME
+
+#see all docker events in the last hour
+docker events --since '1h'
+
+#live docker events with a event filter. you can add multiple --filter events
+docker events --filter event=attach
+
+-------- docker images commands --------------------
+
+# displays images
+docker images
+
+#displays images, does not truncate image id
+docker images --no-trunc
+
+# return just the image IDs
+docker images --quiet
+
+#search for an apache image
+docker search apache
+
+#search for apache, filter for projects with 50 or greater stars
+docker search apache --filter stars=50
+
+#search for apache, filter for official projects only
+docker search apache --filter is-official=true
+
+#remove image. will just untag if multiple tags use the same image
+docker rmi centos:6
+
+#get the history for a particular image
+docker image history centos:6
+
+#remove all dangling images (images not associated with a container)
+docker image prune -a
+
+# inspect an image. pass to a txt file as the output is large
+docker image inspect centos:6
+
+#pull a specific json element from the image inspect
+docker image inspect centos:6 --format '{{.ContainerConfig.Hostname}}'
+
+#see the commands and layers that were used to build a image
+# works best for images built locally
+docker image history yummykoala:v1
+
+
+
+-------- docker save / load image commands --------------------
+#note this can also be done directly to a container
+
+#save an image to tar
+docker save --output centos.latest.tar centos:latest
+
+#load an image from tar or tar.gz
+docker load --input centos.latest.tar
+
+#alternative import that allows you to re-tag
+docker import centos.latest.tar localimport:centos
+
+----- docker build and commit commands --------------
+
+#build a docker app (execute from inside a directory with a Dockerfile)
+# '-t' allows you to specify a repo:tag combo. '.' specifies the directory as your current one
+docker build -t friendlyhello .
+
+#specify the name of the Dockerfile if its is named differently
+docker build -t customthingy:v1 -f Dockerfile2
+
+# --pull == fresh pull of all images
+# --no-cache == rebuild all intermediate layers
+# --squash == squash all layers into a single image layer (need experimental features enabled)
+docker build --pull --no-cache --squash -t optimized:v1 .
+
+# use docker commit to build an image from a container
+# -m == message
+# -a == author. email or name
+# USER/REPO:TAG are optional
+docker commit -m "installed ssh" -a "maintainer email" CONTAINER-NAME USER/REPO:TAG
+
+--------- docker tag commands ------------------
+#tag an image to create a new copy of it to work with
+docker tag centos:6 mycentos:v1
+
+
+------- docker log commands ---------------------
+#see container logs
+docker logs CONTAINER-NAME
+
+docker logs --tail 100 -f courtcall-3pcc_3pcc_1
+
+#specify the log driver type per container (json-file in this case)
+docker run -d --log-driver json-file httpd
+
+------- docker run commands ---------------------------------
+
+# Run image from a registry syntax is username/repo:tag
+# in this case we just have the centos repo with the 7 tag
+docker run centos:7
+
+#run a single command.
+# container will stop when command finishes
+docker run ubuntu:xenial /bin/echo "hello"
+
+# Run an image and connect to it's cli.
+# -i == interactive mode
+# -t == connect to tty
+# bash indicates the program to run (bash shell)
+docker run -it  centos:7 bash
+
+#note that alpine uses 'ash'
+
+# Run "friendlyname" mapping 0.0.0.0:4000 to port 80 on the container
+docker run -p 4000:80 friendlyhello
+
+# Same thing, but in detached (or daemon) mode
+docker run -d -p 4000:80 friendlyhello
+
+#specify a specific interface ip to bind to. you can also add /tcp or /udp
+docker run -d -p 127.0.0.1:4000:80 friendlyhello
+
+# same, but assign random ports and give the container a name
+docker run -d -P --name static-site prakhar1989/static-site
+
+# you can then find the ports with docker port
+docker port static-site
+
+#pass in a couple environment variables
+docker run -it --env MYVAR=whatever --env MYVAR2=whatever centos:7
+
+# add an init system to prevent zombie processes
+--init
+
+----------- docker run --restart policies  ----------------
+# note : stopping a container manually overrides the restart policy
+
+#synatx
+docker run -d --restart FLAG centos:latest
+
+#FLAGs
+no : do not automatically restart the container (default)
+on-falure : restart the container if it exits due to an error,
+    which manifests as a non-zero exit code
+unless-stopped : restart the container unless it is explicitly stopped,
+    or docker itself is stopped or restarted
+always : always restart the container if it stops (even if docker is restarted)
+
+
+
+---------- docker volume management commands ------------
+
+# note for docker swarm you have to --mount as -v is not supported
+
+# run a container with an added volume
+# you can find the volume location with docker inspect CONTAINER-NAME
+#  default is /var/lib/docker/volumes
+ docker run -it --name voltest1 -v /mydata centos:7 bash
+
+
+#map a specific volume to a container volume
+docker run -it --name voltest2 -v HOSTDIR:CONTAINERDIR
+
+#list volumes
+docker volume ls
+
+#create a volume with docker
+docker volume create VOl-NAME
+
+# inspect a volume
+# this shows the mount point among other things
+docker volume inspect VOL-NAME
+
+#delete a volume
+docker volume rm VOL-NAME
+
+-------- docker container commands ---------------------------
+# in most cases the container commands seem to be optional.
+# a lot of this can be done with base docker commands
+
+# List all running containers
+docker container ls
+
+# List all containers, even those not running
+docker container ls -a
+
+# Gracefully stop the specified container
+docker container stop <hash or container name>
+
+# start a stopped container
+docker container start <hash or container name>
+
+# get into the bash shell of a running container
+docker container exec -u root -it <hash or container name> bash
+
+# Force shutdown of the specified container
+docker container kill <hash>
+
+# Remove specified container from this machine
+docker container rm <hash>
+
+# Remove all containers
+docker container rm $(docker container ls -a -q)
+
+
+------ docker exec commands ------------------------
+
+#execute a command on a running container, and return the results to the terminal
+#note you might have to give the full path for the command (ie: from 'which)
+# here we run the command : cat /etc/hosts
+docker exec CONTAINER-NAME cat /etc/hosts
+
+#connect as uid 0 (root) to a container
+docker exec -u 0 -it CONTAINER-NAME bash
+
+
+------- docker networking commands -----------------
+
+# list docker networks
+docker network ls
+
+# get more info about a specific network name.
+#  "bridge" in this case
+docker network inspect bridge
+
+#create a new bridge network
+docker network create --subnet 10.1.0.0/24 --gateway 10.1.0.1 mybridge01
+
+# create a new bridge network and tell docker to use a specific subnet
+# "bridge04" is a name
+docker network create --subnet 10.1.0.0/24 --gateway 10.1.0.1 mybridge01 --ip-range=10.1.4.0/24 --driver=bridge --label=host4network bridge04
+
+# use --opt to change the mtu (just an example)
+docker network create --driver=bridge ==subnet=192.168.1.0/24 --opt "com.docker.network.driver.mtu"="1501" test01
+
+#specify a network (bridge04) when running a container
+docker run -it --net bridge04 centos:7 bash
+
+#specify a specific ip for the container
+docker run -it --net bridge04 --ip 10.1.4.100 centos:7 bash
+
+#connect a running container to a specific network
+# does not disconnect existing networks
+# you can specify an ip with --ip IP-ADDR
+docker network connect NETWORK-NAME CONTAINER-NAME
+
+#disconnect a running container from a network
+docker network disconnect NETWORK-NAME CONTAINER-NAME
+
+# remove a network
+docker network rm NETWORK-NAME
+
+#specify DNS so the container doesn't use host DNS
+docker run -d --name testweb --dns=8.8.8.8 --dns=8.8.4.4 httpd
+
+#you can also specify dns in /etc/docker/daemon.json
+{
+    "dns":["8.8.8.8","8.8.4.4"]
+}
+
+------- docker cleanup --------------------------
+# note : the prune commands seem to be the best way to do this
+
+#list all exited containers
+docker ps -aq -f status=exited
+
+#remove a docker container by name or id
+docker rm CONTAINER-ID
+
+#remove a running container with -f
+docker rm -f CONTAINER-ID
+
+
+#remove stopped containers
+docker ps -aq --no-trunc -f status=exited | xargs docker rm
+
+#remove dangling/untagged images
+docker images -q --filter dangling=true | xargs docker rmi
+
+# Remove all images from this machine
+docker image rm $(docker image ls -a -q)
+
+#prune command (interactive system cleaner)
+docker system prune
+
+#prune, include volumes
+docker system prune --volumes
+
+#prune everything
+docker system prune -a --volumes
+
+------------- misc docker commands -------------------
+
+# Log in this CLI session using your Docker credentials
+docker login
+
+# Tag <image> for upload to registry
+docker tag <image> username/repository:tag
+
+ # Upload tagged image to registry
+docker push username/repository:tag
+
+#delete all containers with a status of exited
+docker rm $(docker ps -a -q -f status=exited)
+
+# add an auto-remove that will delete the container once it stops with --rm
+docker run -it --rm centos:7

@@ -1,0 +1,19 @@
+JUNOS OS Software Upgrade
+http://www.juniper.net/techpubs/en_US/junos11.4/information-products/topic-collections/releasenotes/11.4/index.html?topic-63721.html
+Connect to the network
+plug a cable from an existing switch into the management interface (me0)
+//configure the management interface with a IP address
+#set interfaces me0 unit0 family inet address 192.168.12.20/24
+//set the default route
+#set routing-options static route 0.0.0.0/0 next-hop 192.168.12.1
+you should now be able to ping the switch on the network assuming the switch it is connected to is setup with the
+correct vlan on the port.
+Upgrade
+>request system software add http://192.168.1.10/packagename.tgz
+Make sure both partitions are the same
+http://forums.juniper.net/t5/Ethernet-Switching/Dual-root-but-different-JUNOS-versions/td-p/171246
+>show system snapshot media internal
+//format backup and copy over software
+>request system snapshot slice alternate
+//verify
+>show system snapshot media internal

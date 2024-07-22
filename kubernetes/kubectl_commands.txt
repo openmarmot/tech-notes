@@ -1,0 +1,123 @@
+kubectl commands
+
+--notes--
+last update July 07 2021
+
+-- sources -- 
+https://kubernetes.io/docs/reference/kubectl/cheatsheet/
+https://rancher.com/learning-paths/how-to-manage-kubernetes-with-kubectl/
+https://stackoverflow.com/questions/47369351/kubectl-apply-vs-kubectl-create
+https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/
+
+-- syntax --
+
+kubectl [command] [TYPE] [NAME] [flags]
+
+kubectl delete --all [TYPE] --namespace [NAMESPACE]
+
+kubectl create -f SOMEFILE.yml
+
+
+-- component status, cluster wide stuff --
+
+kubectl get cs
+kubectl get componentstatuses
+
+kubectl cluster-info
+
+kubectl get namespaces
+
+
+#overview of all resources across all namespaces
+kubectl get all --all-namespaces
+
+#events
+kubectl get events --all-namespaces
+
+-- create vs apply --
+
+create : only creates new - will error if it exists
+
+apply : will create new or update (overwrite) existing
+
+
+-- node stuff --
+
+# get nodes
+kubectl get nodes
+
+# describe node, has performance and resource info and node event log
+kubectl describe node NODE_NAME
+
+# get the used node ports
+kubectl describe service --all-namespaces | grep -i nodeport
+
+# mark a node so that no new pods are scheduled on it 
+kubectl cordon NODENAME
+
+# remove cordon
+kubectl uncordon NODENAME
+
+# remove all pods from a node (cmd doesn't finish until its complete)
+kubectl drain NODENAME
+
+-- pod stuff --
+
+# get pods, pod ip, and what node it is on
+kubectl get pods -o wide
+
+# specifiy a namespace other than default like kube-system
+kubectl get pods -n kube-system
+
+# execute a command in a pod. output will show up in your terminal, so cat is useful
+kubectl exec POD-NAMEt -- sh -c "echo local-path-test > /data/test"
+
+# open a shell in a pod
+kubectl exec --stdin --tty POD_NAME -- /bin/bash
+
+
+# list the containers being used by the pods
+kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" | less
+
+-- deployment stuff --
+
+# get list of deployments
+kubectl get deployments
+
+#get more info on a specific deployment
+kubectl describe deployments DEPLOYMENT_NAME
+
+# scale a deployment
+kubectl scale deployment web --replicas=3
+
+
+-- service stuff --
+
+kubectl get svc 
+kubectl get service
+
+-- cronjobs --
+kubectl get cronjobs
+
+
+-- namespace stuff --
+
+#create
+kubectl create namespace robot-shop
+
+# now you can refer to the namespace with -n NAMESPACE
+# or --namespace NAMESPACE
+
+-- log stuff --
+# pod log 
+kubectl logs POD_NAME
+
+# Tail Container Logs
+# --max-log-requests needs to be set if there are more than five containers
+kubectl logs --follow -l <label_name>=<label> --max-log-requests 10
+
+--- checking resource utilization --
+
+kubectl top nodes
+kubectl top pods

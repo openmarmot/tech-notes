@@ -1,0 +1,180 @@
+
+-
+Install KVM on CENTOS 7
+
+last updated : September 18 2016
+
+note : further work on this build has been moved to ansible script "centos7-kvm-install.yml"
+
+------------notes------------------------
+
+tested on Centos 7.2
+
+-----------------------------------------
+
+------------sources/reference material----------------------
+
+Red Hat documentation
+--https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Virtualization_Getting_Started_Guide/index.html
+--https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/pdf/Virtualization_Deployment_and_Administration_Guide/Red_Hat_Enterprise_Linux-7-Virtualization_Deployment_and_Administration_Guide-en-US.pdf
+--https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/pdf/Virtualization_Security_Guide/Red_Hat_Enterprise_Linux-7-Virtualization_Security_Guide-en-US.pdf
+
+Dell documentation
+-"KVM Virtualization in RHEL 7 Made Easy"
+
+-----------------------------------------
+
+---------hardware specifications---------
+
+# physical hardware
+- make sure your processor has the intel/amd virtualization instructions
+
+#virtual machine
+- If you are using Proxmox make sure to set the processor type to host
+- also make sure you have enabled nested virtualization on the host server
+- make sure to use virtio drivers for network and storage
+
+# network config
+- eth0 : your management interface
+- eth1 : connects to a bridge for the VM network
+
+-----------------------------------------
+
+----------base install------------------
+
+# start with a Centos 7.x Minimal server install
+# selinux is disabled (out of scope for this guide)
+
+# install packages
+yum install virt-manager virt-top libvirt virt-install qemu-kvm xauth dejavu-lgc-sans-fonts bridge-utils 
+
+# enable ip forwarding in the kernel
+echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+
+# apply the new kernel settings
+sysctl -p /etc/sysctl.conf
+
+# start and enable libvirt 
+systemctl enable libvirtd
+systemctl start libvirtd
+
+#edit /etc/libvirt/qemu.conf and uncomment these two lines to fix some permissions issues with mounted folders
+user = "root"
+group = "root"
+
+
+
+#make a folder for your VM's to be stored in
+mkdir /vm-data
+
+----------------------------------------
+
+----------network setup------------------
+
+#eth0 is a static IP address for the host management interface
+#we will be leaving it alone
+
+#eth1 is the physical interface for the network bridge
+vim /etc/sysconfig/network-scripts/ifcfg-eth1
+
+TYPE=Ethernet
+BOOTPROTO=none
+DEVICE=eth1
+ONBOOT=yes
+BRIDGE=br0
+
+# br0 is the network bridge for the VM(s). It attaches to eth1
+vim /etc/sysconfig/network-scripts/ifcfg-br0
+
+DEVICE=br0
+ONBOOT=yes
+TYPE=Bridge
+BOOTPROTO=none
+STP=on
+DELAY=0.0
+
+# delete the default virsh network
+virsh net-destroy default
+virsh net-undefine default
+systemctl restart libvirtd
+
+-------------------------------------------------------------
+
+-----------add NFS storage--------------------------
+
+#add network share for .iso files
+
+mkdir /iso
+vim /etc/fstab
+10.6.8.2:/volume2/iso /iso nfs	ro,hard,intr,bg,nfsvers=3,noatime,nosuid,proto=tcp      0       0
+
+-----------------------------------------------------
+
+----------FirewallD---------------------------------
+#For now we are going to disable the firewall.
+#A correct firewall setup gets complicated with the bridge and the VNC ports
+
+systemctl stop firewalld
+systemctl disable firewalld
+
+----------
+Restart server
+----------
+
+-------------test vm build command----------
+# after running this you can connect to a gui console with vnc over port 5900 
+#(or higher port, check virsh vncdisplay vm1)
+
+virt-install --name vm1 --ram=1024 --vcpus=1 --disk path=/vm-data/vm1.img,size=15 --cdrom /iso/Centos/CentOS-7-x86_64-DVD-1511.iso --network bridge:br0 --graphics vnc,listen=0.0.0.0 --noautoconsole --video cirrus
+
+
+--------------------------------------------
+
+------------some useful commands-----------------
+
+# check what vnc port the VM is using (note: start at 5900 and count up)
+virsh vncdisplay vm1
+
+# list all VMs
+virsh list --all
+
+# show VM information:
+virsh dominfo vm1
+
+# show vcpu/memory usage for all running VMs
+virt-top
+
+# Shutdown a VM
+virsh shutdown vm1
+
+# Forceful shutdown 
+virsh destroy vm1
+
+# Start a VM
+virsh start vm1
+
+# Mark VM for autostart
+virsh autostart vm1
+
+# Mark VM for manual start
+virsh autostart -disable vm1
+
+# Undefine a VM (afterwards you can manually delete the VM image)
+virsh undefine vm1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

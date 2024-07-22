@@ -1,0 +1,148 @@
+
+
+linux migration playbook 
+
+--notes--
+last update : June 30 2020
+
+--Screen Commands--
+# create a new ‘named’ screen
+screen -S NAME
+
+#list available screens 
+screen -ls
+
+#reattach screen
+screen -r NAME
+
+------------------Discovery-------------------------------------------------------
+
+--- discovery-os-and-environment ---
+
+# look at the users. some software installs have unique default users
+cat /etc/passwd
+
+#get a history from root and other possible main users
+history
+
+#check kernel version
+uname -a
+
+#check os version
+cat /etc/*release
+
+#check df for anything interesting
+df -h
+
+#check /etc/fstab for anything interesting (especially binds)
+cat /etc/fstab
+
+--- discovery-software ---
+
+#check listening ports
+# note that if it lists ipv6 its ususally both ipv6 and ipv4
+lsof -i TCP| fgrep LISTEN
+netstat -lntpu
+ss -lntu
+
+# list installed software with yum
+yum list installed
+
+# list installed software with apt
+apt list --installed
+
+# check for specific packages like php
+yum list installed | grep php
+
+#list all installed php packages using rpm
+rpm -qa | grep -i php
+
+#similar but for httpd modules
+rpm -qa | grep -i mod
+
+#check for any crons 
+for user in $(getent passwd | cut -f1 -d: ); do echo $user; crontab -u $user -l; done
+
+# nginx sites
+grep server_name /etc/nginx-rc/* -RiI
+
+# apache httpd sites
+httpd -S
+
+--- discovery-mysql ---
+
+# note that if mysql autologins as root the password is often setup in /root/.my.cnf
+
+# check what databases are available
+show databases;
+
+# check table types (if it matters)
+show table status from DATABASE_NAME;
+
+# check the database engine for the tables in a database
+show table status from DATABASE_NAME;
+
+# check users (only works when logged in with root)
+#passwords are encrypted
+select user, host, password from mysql.user;
+
+#show grants for a user
+show grants for user@ip;
+
+# mysql -- database size
+SELECT table_schema AS "Database name", SUM(data_length + index_length) / 1024 / 1024 AS "Size (MB)" FROM information_schema.TABLES GROUP BY table_schema;
+
+
+------------------New Server Setup -----------------------------------------------
+
+--- General Webserver Permissions ---
+#add user to apache group
+usermod -a -G apache USERNAME
+chown -R USERNAME:apache /var/www
+chmod 2775 /var/www
+find /var/www -type d -exec sudo chmod 2775 {} \;
+find /var/www -type f -exec sudo chmod 0664 {} \;
+
+
+------------------Data Move-------------------------------------------------------
+
+#migrate users from one system to another
+https://access.redhat.com/solutions/179753
+
+--- data move general ---
+
+#rsync (push) contents of a folder locally to a destination server
+rsync -avz -e "ssh -p 22" /var/www/ root@DST_IP_ADDR:/var/www/
+
+#rsync (pull) contents of a remote folder to a local folder
+rsync -avz -e "ssh -p 7272" centos@SRC_IP_ADDR:/home/centos/db.sql /home/example/ 
+
+
+--- data move mysql ---
+#dump a single database. add -h to specify a remote server
+
+mysqldump --add-drop-database --databases -u root -p DATABASENAME > FILENAME.sql
+
+#single database restore
+mysql -u USERNAME -p DATABASENAME<DUMP_NAME.sql
+
+# single database restore with a progress bar
+pv db.sql | mysql -u USERNAME -p  
+
+# create the user(s) that you need. you can use an IP or localhost
+create user 'USERNAME'@'IP' IDENTIFIED BY 'PASSWORD';
+
+
+# grant priviledges to your user(s) that you just created
+grant all privileges on DATABASE_NAME.* to USER@IP;
+flush privileges;
+
+
+----------------- Post Data Move Setup -----------------------------------
+
+#check for any webfiles that are referencing localhost
+# or change for a specific db or password or server that you need to find
+grep -rHI "localhost" /var/www/
+
+
+

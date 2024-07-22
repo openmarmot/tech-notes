@@ -1,0 +1,356 @@
+CCNA Study Sheet
+
+Spanning Tree Protocol
+listening only applies to the original STP
+rapid spanning tree is 802.1w
+
+Root port: used to reach the root bridge
+Designated port: forwarding port, one per link (!)
+Blocking/Non-Designated port: blocking port. worst switch (highest pri and mac) gets the block port
+
+//show in-depth spanning tree info including timings and bridge priorities
+#sh spanning-tree
+
+//find the root bridge by showing spanning tree, and then using CDP
+//if the switch is root, under root id it will say "this bridge is root"
+//otherwise it will list which port the root switch is connected to
+#sh spanning-tree
+#sh cdp neighbors
+
+//change the spanning tree priority. lowest priority+lowest mac==root. priority is between 0 and 61440 (incr. by 4096)
+//remember for pvst spanning tree is per vlan
+(config)#spanning-tree vlan 2 priority 16384
+
+//force root
+(config)#spanning-tree vlan 2 root primary
+
+//enable rapid-pvst
+(config)#spanning-tree mode rapid-pvst
+
+portfast: makes a port transition immediately from blocking to forwarding. useful
+//enable portfast on all non-trunk ports
+(config)#spanning-tree portfast default
+//enable portfast on a per-port basis
+(config-if)#spanning-tree portfast
+
+bpdu guard: places the port in error-disabled state if it receives a bpdu
+//on all ports
+(config)#spanning-tree portfast bpduguard default
+//on a specific port
+(config-if)#spanning-tree bpduguard enable
+
+the root cost carried by the bpdu increments after it goes across a network segment. therefore the cost will be higher for one 100Mb/s link versus a route over two Gigabit links, and the gigabit links will be designated.
+remember that nonroot switches do not originate BPDUs after convergence.
+
+EtherChannel
+etherchannel: cisco proprietary term for port channeling
+PAgP: cisco proprietary port channel negotiation protocol. aids in automatic creation for etherchannel links
+PAgP uses auto/desirable. auto/auto will not work because neither side will initiate
+LACP (802.3ad): same as PAgP, but non-proprietary
+LACP uses active/passive. passive/passive will not work because neither side will initiate.
+
+//configure LACP
+(config)#int range fa0/23 - 24 //note the spacing between the dash is needed
+(config-if-range)#channel-group 1 mode active
+//create port channel
+(config)#int port-channel 1
+(config-if)# switchport trunk encapsulation dot1q
+(config-if)#switchport mode trunk
+//repeat for second switch
+
+#sh etherchannel port-channel
+
+#sh etherchannel summary
+
+
+
+
+High Availability
+FHRP First Hop Redundancy Protocol: works by presenting a virtual router that is used as a default gateway by the host machines.
+HSRP Hot Standby Router Protocol: Cisco proprietary protocol that provides a redundant gateway for hosts on a local subnet (not load balanced)
+
+VRRP Virtual Router Redundancy Protocol: Open standard HSRP. Redundant but not load balanced
+
+GLBP Gateway Load Balancing Protocol (GLBP): Open standard. Redundant and load balanced
+
+HSRP Virtual Router: the role held by the current active router
+HSRP Active Router: the physical router that receives data sent to the virtual router
+HSRP Standby Router: backup to the active router. monitors status of the HSRP group
+
+HSRP Virtual MAC: xxxx.0c07.acxx last two are the group #
+HSRP Hello timer: interval for sending out hello messages. default is 3 seconds.
+HSRP Hold timer: the interval the standby router uses to determine whether the active router is offline. By default it is 10 seconds, or about 3X the hello timer.
+
+HSRP Priority: default 100. higher priority becomes the active router. priority decreases when a tracked interface goes down.
+
+//HSRP Setup. Repeat for each interface
+(config-if)#standby 1 ip 10.1.1.10
+(config-if)#standby 1 name batman //optional
+(config-if)#standby 1 priority 110 //optional
+
+//determine HSRP state
+#sh standby brief
+//sh HSRP state and timerss
+#sh standby
+
+HSRP troubleshooting: the group number must be the same on each router
+
+GLBP Gateway Load Balancing Protocol: Cisco proprietary. allows automatic selection and simultaneous use of multiple gateways. differs from HSRP in that it allows for load balancing.
+GLBP AVG: Active Virtual Gateway. Assigns virtual macs to all members of the GLBP group. Round robins ARP replies among the virtual macs to load balance active sessions.
+GLBP AVF: Active Virtual Forwarder. All gateways that are not the AVG. Responsible for forwarding packets sent to its virtual MAC.
+
+//GLBP Setup. Repeat for each interface
+(config-if)#glbp 1 ip 192.168.12.12
+(config-if)#glbp 1 name batman //optional
+(config-if)#glbp 1 priority 150 //optional
+(config-if)#glbp 1 preempt //optional. allows interface to reassume avg if it loses it
+
+//verification
+#sh glbp
+
+SYSLOG
+Syslog info is usually saved in the logging buffer on ram, on a syslog server, or in the console terminal
+(config)#logging 192.168.12.3 //ip of logging server
+(config)#logging-trap severity //logs the level you choose and all the levels above it
+severity levels:
+Emergency-0
+Alert-1
+Critical-2
+Error-3
+Warning-4
+Notification-5
+Informational-6
+Debugging-7
+
+#sh logging
+
+SNMP
+operates at the application layer
+SNMP uses port 161
+SNMP has three components:
+1) SNMP Manager //controls and monitors the activities of the network hosts
+2) SNMP Agent //software component that maintains and reports the data
+3) Management Information Base (MIB) //storage area for network management info. consists of collections of managed objects
+
+SNMP can cause high cpu use. (Phil!! lol)
+
+SNMP sends TRAP and INFORM (acknowledged. snmp v2) alerts
+SNMP V3 added message integrity, authentication, and encryption
+New SNMPv3 config: view, group, and user
+
+SNMP v2 Setup
+//set community name and give rw access to the device
+(config)#snmp-server community todd RW  //this is the only step that is required to setup SNMP
+(config)#snmp-server location Dallas
+(config)#snmp-server contact Lex Luther
+
+NETFLOW
+Netflow has a singular purpose: to collect IP traffic statistics
+Cisco developed, but not Cisco proprietary
+
+(config-if) ip flow egress    //track data going out of interface
+(config-if) ip flow ingress  //track data going into interface
+
+//setup collector
+#ip flow-export destination 172.16.1.1 2055 //udp port number
+
+#sh ip flow interface
+#sh ip flow export
+
+a flow is defined as:
+-ingress interface
+-source and destination ip address
+-ip protocol
+-source and destination port
+-IP TOS (Type of Service)
+
+Troubleshooting
+duplex mismatch: the late collision counter will increment if you have a duplex mismatch
+
+input errors: input errors indicate high errors such as CRCs. This can point to cabling problems, hardware issues, and duplex mismatches
+
+//show the routing table
+#sh ip route
+D=EIGRP (AD 90)
+O=OSPF (AD 110)
+R=RIP (AD 120)
+Static route (AD 1)
+Directly connected (AD 0)
+
+Remember the most specific route will be used first. If there is a tie the lowest AD will be used.
+
+//troubleshoot access lists by looking at all of the ACLS, and then looking at the interfaces to see which ACLs are //applied
+#sh access-lists
+#sh int fa0/1
+
+//troubleshoot vlans by checking the vlan database, CAM table, and port vlan assignments
+#sh vlans
+#sh mac address-table
+#sh interfaces fa0/1 switchport
+
+//trunk troubleshooting
+//two ports in dynamic auto will not form a trunk
+//ISL does not send untagged frames across the link
+//verify that the interface config is set to the correct trunk params
+sh interfaces trunk
+sh interfaces fa0/1 switchport //used to determine the trunk operational mode of the port
+sh interfaces fa0/1 trunk
+switchport mode access
+switchport mode trunk
+switchport trunk encapsulation dot1q (or isl)
+switchport trunk native vlan 1
+
+When you turn the router on, it runs through the following boot process.
+
+The Power-On Self Test (POST) checks the router’s hardware. When the POST completes successfully, the System OK LED indicator comes on. The router checks the configuration register to identify where to load the IOS image from. A setting of 0×2102 means that the router will use information in the startup-config file to locate the IOS image. If the startup-config file is missing or does not specify a location, it will check the following locations for the IOS image: flash, tftp, or rom
+
+the config register tells the router how to boot
+-0x2102 : load the config from nvram
+-0x2142 : ignore the startup config file. boots as if it has no configuration
+
+
+Upgrading IOS software
+//show contents of flash memory
+#sh flash     or  #dir flash
+//ios file is the one with the .bin suffix
+//backup the IOS
+#copy flash tftp  //copies the flash to tftp. prompts for tftp server ip
+#format flash:  //optional. used if you have no space in flash and want to wipe everything
+//copy the new ios file from tftp to flash
+#copy tftp flash
+
+EIGRP
+EIGRP: Classless distance-vector protocol that uses the concept of an autonomous system to describe a set of contiguous routers that run the same routing protocol and share routing information including the subnet mask in the routing updates.
+
+EIGRP metrics are determined by bandwidth and delay. OSPF uses cost(aka bandwidth)
+
+EIGRP doesnt send link-state packets like OSPF, instead it sends distance-vector updates that include info about network plus the cost of reaching them from the advertising router.
+EIGRP has a default hop count of 100 with a maximum distance of 255
+Three conditions to become EIGRP neighbors:
+-Hello or ACK received (multicast 224.0.0.10)
+-AS numbers match
+-Identical metrics
+
+//EIGRP Packets
+-update: route information. multicast or unicast
+-query: request for specific routes. always uses multicast
+-reply: unicast reply to a query. includes specific route
+-hello: unreliable multicast. used to discover EIGRP neighbors
+-ack: unicast response to an update
+
+Wildcards: remember that 0 is strict, 255 is wild, and other numbers should be 1 less than the block size
+
+//simple config. 20 is the autonomous system number, which must be the same between neighbors
+(config)#router eigrp 20
+(config-router)#network 10.10.11.0 0.0.0.255 //the network commands are to define local EIGRP interfaces
+(config-router)#network 172.16.10.0 0.0.0.3
+
+//turn off route auto summarization (for networks with the same subnets on seperated routers)
+(config)#router eigrp 20
+(config-router)#no auto-summary
+
+//exclude an interface from EIGRP
+(config)#router EIGRP 20
+(config-router)# passive-interface g0/1
+
+//designate a neighbor so EIGRP uses unicast instead of multicast
+(config)#router eigrp 20
+(conifg-router)neighbor 172.16.10.2
+
+#sh ip eigrp topology //shows entries in the EIGRP topology table
+#sh ip route eigrp // shows EIGRP entries in the routing table
+#sh ip eigrp traffic //shows EIGRP send/receive packet count
+#sh ip protocols //shows info about the active protocol sessions including EIGRP variance
+#sh ip EIGRP events //displays a log of every EIGRP event
+
+Router ID (RID)  //can be the same as other routers in an AS but can interfere with route redistribution
+uses highest loopback ip, then highest interface ip if no loopback
+
+OSPF
+Each area has to contain a router with a physical or logical connection to the backbone area (area 0).
+The default max number of equal cost paths is 4
+The default hello and dead times are 10 and 40 seconds.same for ppp. A frame relay multipoint interface is 30/120
+The router ID (RID) is the highest loopback IP, if no loopback it is the highest interface IP. it is used in a type 1 LSA
+Default AD is 110
+OSPF cost is determined by bandwidth
+Hello packets and LSAs are used to build the topology database (OSPF is link-state)
+
+OSPF multicast uses 224.0.0.5
+
+Neighbor routers must:
+-have the same area id
+-have the same hello and dead timers
+-have the same authentication password and stub area flag
+
+//basic config
+(config)#router ospf 1  //1 is the process id. does not matter between routers
+(config-router)#network 10.0.0.0 0.255.255.255 area 0
+
+//turn ospf on for all interfaces with a full wild card
+(configure-router)#network 0.0.0.0 255.255.255.255
+
+OSPF Priority:
+-interface with the highest priority becomes DR
+-interface with the second highest priority becomes BDR
+-default priority is 1
+
+The DR broadcasts route updates to everything.
+If a router is not DR or BDR it is DROTHER. It will send its route updates to the DR and BDR only
+
+//setting priority to zero basically disqualifies the IF from being a DR or BDR
+(config-if)#ip ospf priority 0  //0-255  default 1. highest wins DR, 2nd wins BDR
+
+#sh ip protocol //will tell what type of OSPF router this is (IE: border)
+#sh ip route //shows all connected routes. remember there is preference for lower AD (static[1] or EIGRP[90])
+
+WAN
+remember most WAN protocols are layer 2
+remember both router interfaces need to be in the same subnet for a WAN connection to work
+//find WAN encapsulation type. if not listed it is probably the default HDLC
+#sh int s0/0
+
+DTE: Data Terminal Equipment. Routers and LAN side equipment
+DCE: Data Communication Equipment. WAN equipment like a CSU/DSU. The DCE provides clocking to the DTE equipment.
+#sh controllers s0/0/0   // states whether the hardware is DTE or DCE and gives the clock rate
+
+HDLC: High-level Data-link Control Protocol. popular data link layer protocol. point to point. no authentication.
+HDLC is the default encapsulation type for serial interfaces.
+
+PPP: Point to Point Protocol. non-proprietary substitute for HDLC. Transports layer 3 packets across a data link layer point to point link. used over async serial (dial up) or sync serial (ISDN). Can use PAP or CHAP authentication. Uses Network Control Protocol (NCP) to allow multiple network protocols to be encapsulated.
+
+PAP: Password Authentication Protocol. passwords sent clear text
+CHAP: Challenge Handshake Authentication Protocol. more secure. hashed with one way MD5
+
+(config-if)#ppp authentication chap //usernames and passwords must match between routers for chap to work
+
+//determine which users are connected and being used for authentication
+#sh users 
+
+Frame Relay-packet switched layer 2 tech.
+
+#sh frame-relay map
+FECN Forward Explicit Congestion Notification: when the Frame Relay network recognizes congestion in the cloud, the switch will set the Forward Explicit Congestion Notification (FECN) bit to 1 in a Frame Relay packet header. This will indicate to the destination DTE that the path the frame just traversed is congested.
+BECN Backwards Explicit Congestion Notification: When the switch detects congestion in the Frame Relay network, it will set the BECN bit in a Frame Relay frame that’s destined for the source router. This notifies the originating router that congestion is ahead. Cisco routers won’t take action on this information unless if they are told to.
+If the FECN count is incrementing the local PVC is congested. If the BECN count is increasing then the remote PVC is congested.
+IPV6 Notes
+Features of the IPv6 protocol
+￼-Autoconfiguration
+-No broadcasts
+-Plug-and-play
+-A single interface may be assigned multiple IPV6 addresses of any type.
+-Every IPV6 interface contains at least one loopback address.
+
+With IPv6, devices can build a link-local address automatically. But notice this address is only used for communications within the local subnetwork, routers do not forward these addresses.
+Below is the list of common kinds of IPv6 addresses:
+
+Loopback address
+::1
+Link-local address
+FE80::/10
+Site-local address
+FEC0::/10
+Global address
+2000::/3
+Multicast address
+FF00::/8
+

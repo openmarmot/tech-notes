@@ -1,0 +1,56 @@
+//start with base debian 7.6 install
+
+//install vlan and bridgeutils
+apt-get install vlan bridge-utils
+
+//display a list of all of your interfaces
+//the mac addresses will differentiate the built in NICs from the added pci-e NICs
+ifconfig -a
+
+//configure logical interfaces (like juniper "unit" numbers)
+//choose a physical port that will become a trunk
+vconfig add eth2 11
+vconfig add eth2 63
+vconfig add eth2 65
+
+//bring the logical interfaces up
+ip link set eth2.11 up
+ip link set eth2.63 up
+ip link set eth2.65 up
+
+//create briges (one per vlan)
+//bring the bridge up
+//add the interfaces (logical or physical)
+//enable stp
+brctl addbr br-vlan11
+ip link set br-vlan11 up
+brctl addif br-vlan11 eth2.11
+brctl stp br-vlan11 on
+
+brctl addbr br-vlan63
+ip link set br-vlan63 up
+brctl addif br-vlan63 eth2.63
+brctl stp br-vlan63 on
+
+brctl addbr br-vlan65
+ip link set br-vlan65 up
+brctl addif br-vlan65 eth2.65
+brctl stp br-vlan65 on
+
+//show the bridges and their assigned ports
+brctl show
+
+//show the MAC table per bridge
+brctl showmacs br-vlan11
+
+//show the STP port forwarding state per bridge
+brctl showstp br-vlan11
+
+
+
+
+------------------------
+thoughts
+-----------------------------------------------
+//management ports
+according to the man page for brctl only ports that are added to the bridge will be considered as an option for forwarding frames. therefore assign an ip to an interface, connect it to an access port of another switch, and do not assign the port to a bridge, and it will act as a seperated management port. 

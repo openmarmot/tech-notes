@@ -1,0 +1,91 @@
+MarmotEdge SRX210 Config
+This document goes through the setup I did on MarmotEdge
+I used the following references
+Day One: Configuring Junos Basics PDF
+Juniper SRX Series O'Reilly Book
+Set Root Password
+# set system root-authentication plain-text-password
+Set Hostname
+#set system host-name marmotEdge
+Setup Loopback Interface
+//address has to be set as preferred because we also want to add the standard loopback ip
+#set interfaces lo0 unit 0 family inet address 10.6.1.10/32 preferred
+#set interfaces lo0 unit 0 family inet address 127.0.0.1
+Management Interface
+i'm not sure if this needs to be setup, or if we can just use the loopback address
+Set Time
+the date is in the form YYYYMMDDhhmm.ss
+>set date 201404272009.00
+//set timezone
+#set system time-zone America/Phoenix
+//verify settings
+>show system uptime
+>show ntp status
+Set Login Banner
+#set system login message "Unauthorized access is prohibited"
+Create a Local User
+#edit system login
+#edit user andrew
+#set authentication plain-text-password
+#set class super-user
+Enable Remote Access
+#set system services ssh root-login deny
+#set system services ssh protocol-version v2
+#set system services ssh connection-limit 3
+verify after commit
+>show system services ssh
+we will allow ssh on the LAN side interface in the next section.
+Setup Security Zones
+we need to setup security zone for the internet and LAN side of the networks. the zones can be
+named anything, but we will go with the junos standard of untrust for internet side and trust for
+LAN side.
+//set the internet side untrust
+#set security zones security-zone untrust interfaces ge-0/0/0.0
+//make sure to show the int and delete any services that you don't want to allow through the
+interface. the default has dhcp and tftp enabled
+//set the LAN side trust
+#set security zones security-zone trust interfaces ge-0/0/1.0
+//allow ssh, http and https web access, and ping on the "trust" security zone
+#set security zones security-zone trust interfaces ge-0/0/1.0 host-inbound-traffic systemservices http
+#set security zones security-zone trust interfaces ge-0/0/1.0 host-inbound-traffic systemservices https
+#set security zones security-zone trust interfaces ge-0/0/1.0 host-inbound-traffic systemservices ping
+#set security zones security-zone trust interfaces ge-0/0/1.0 host-inbound-traffic systemservices ssh
+verify after commit
+>show security zones
+Setup IP interfaces
+we want to set our internet facing interface with the static address given to us by the ISP, and
+set our LAN facing interface with a /30 (two usable addresses) for connection with another
+layer 3 device. Note that each interface needs to be setup as routing (INET)
+#set interfaces ge-0/0/0 unit 0 family inet address 24.255.102.178/28
+#set interfaces ge-0/0/1 unit 0 family inet address 10.6.2.1/30
+verify after commit
+>sh interfaces terse
+Setup NAT
+The Junos NAT type we will use is source NAT (many:1)
+#set security nat source rule-set trust-untrust from zone trust
+#set security nat source rule-set trust-untrust to zone untrust
+#set security nat source rule-set trust-untrust rule outgoing match source-address 10.6.0.0/16
+//set the source nat address to the be address of the egress interface
+#set security nat source rule-set trust-untrust rule outgoing then source-nat interface
+#set security policies from-zone trust to-zone untrust policy trust-outbound match sourceaddress any destination-address any application any
+#set security policies from-zone trust to-zone untrust policy trust-outbound then permit
+verify after commit
+>sh security nat
+>sh security policies
+>sh security zones
+>sh int terse
+Setup Static Routes
+setup a static route to our internet gateway
+#set routing-options static route 0.0.0.0/0 next-hop 24.255.102.177
+#set routing-options static route 192.168.0.0/16 next-hop 10.6.2.2
+#set routing-options static route 10.6.0.0/16 next-hop 10.6.2.2
+verify after commit (will not show up if the line is down)
+[edit routing-options]
+#show
+Setup Web Interface
+#set system services web-management http interface ge0/0/1
+Misc
+the srx210 starts with a bunch of dumb defaults.
+make sure to delete/ turn off dhcp.
+ge0/0/0 starts with allowing dhcp and tftp which should be turned off if not used
+delete NAT ruleset trust-to-untrust

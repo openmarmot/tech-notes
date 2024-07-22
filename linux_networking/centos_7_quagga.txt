@@ -1,0 +1,140 @@
+
+new_centos7_quagga_setup.txt
+
+----notes--------------------
+last updated: March 7 2016
+
+tested on Centos 7.2
+
+----info---------------------
+Quagga terms:
+Zebra: core daemon, responsible for kernel interfaces and static routes
+Ospfd: IPv4 OSPF daemon
+
+-----OS Install--------------
+VM 
+1GB Ram
+1 vCPU
+15 GB HD
+NIC (DHCP)
+NIC (leave default)
+
+Centos 7.2 
+
+Minimal Install
+
+-----Software Setup---------------
+
+// yum update
+//setup ssh keys and disable password logins
+vi /etc/ssh/sshd_config
+//disable selinux
+vi /etc/selinux/config
+
+//install and setup quagga
+yum install quagga
+systemctl start zebra.service
+systemctl enable zebra.service
+
+//disable firewalld
+systemctl disable firewalld
+systemctl stop firewalld
+
+//enable IP forwarding
+echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf
+
+//remove NetworkManager (seems to interfere with zebra)
+yum remove NetworkManager
+
+//remove config scripts
+rm -f /etc/sysconfig/network-scripts/ifcfg-eth0
+rm -f /etc/sysconfig/network-scripts/ifcfg-eth1
+
+//check DNS settings
+cat /etc/resolv.conf
+
+//shutdown, and switch the VLANs on the NICS to the OSPF Net and your new VLAN
+
+-----------zebra setup-----------------------
+//launch command shell
+vtysh
+
+//enter global config
+config t
+
+//set the log file location
+(config)# log file /var/log/quagga/quagga.logged
+
+//exit global config
+(config)# exit
+
+//save config
+copy run start
+
+//show interface information
+sh int
+
+//configure an interface
+config t
+(config)# int eth0
+(config-if)# ip address 10.6.50.3/24
+(config-if)# description "to ospf RAN"
+(config-if)# no shutdown
+
+(config)# int eth1
+(config-if)# ip address 10.8.1.1/24
+(config-if)# description "VLAN 81"
+(config-if)# no shutdown
+
+exit
+exit
+copy run start
+exit
+
+-----ospf config----------------------------
+
+//you need to create and setup the permisions for the ospfd.conf file
+echo "log stdout" >> /etc/quagga/ospfd.conf
+chown quagga:quagga ospfd.conf
+
+//start and enable on startup
+systemctl start ospfd.service
+systemctl enable ospfd.service
+
+//launch vtysh shell and enter global config
+vtysh
+config t
+
+//enter ospf router config
+(config)# router ospf
+
+//add the networks for ospf
+(config-router)# network 10.6.50.0/24 area 0
+(config-router)# network 10.8.1.0/24 area 0
+
+//set the ospf router id
+(config-router)# router-id 10.6.50.3
+
+exit
+exit
+copy run start
+exit
+
+------testing-------------------
+//reboot and make sure the interfaces come backup
+ip addr
+
+//check the kernel routes
+ip route
+
+//check the quagga routes
+vtysh
+show ip ospf nei
+show ip ospf route
+
+
+
+
+
+

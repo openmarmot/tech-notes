@@ -1,0 +1,166 @@
+
+setup replication with xtrabackup 
+
+--notes--
+
+last update : August 18 2020
+
+note : this is based on centos 7
+
+--sources--
+https://www.percona.com/doc/percona-xtrabackup/LATEST/howtos/setting_up_replication.html
+https://www.percona.com/doc/percona-xtrabackup/LATEST/installation/yum_repo.html
+https://serverfault.com/questions/366924/mysql-check-enable-binary-logs
+
+-- install percona XtraBackup from repo --
+#add repo. should work on most centos versions
+yum install http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+
+# install
+yum install percona-xtrabackup
+
+---notes on my.cnf file---------
+
+#the following is needed in the my.cnf file :
+
+# binary logging enabled. 
+# if this is off you can add it, and enable it in mysql with set global log bin=on;
+# note : these can be set to expire with expire_logs_days=5 or whatever
+# this variable changes on mysql 8+ to ?
+
+log-bin
+
+#data directory must be specified
+datadir=/var/lib/mysql #or where ever
+
+#server id should be 1 for master and 2 for slave
+server-id=1
+
+#may also need this
+bind-address = 0.0.0.0
+
+
+---firewall rules-----
+#the master server needs sql port open
+
+-iptables-
+#list current rules by line number
+iptables -L --line-numbers
+
+#insert into the appropriate line number (3 in this case)
+iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT
+
+#save
+service iptables save
+
+--firewalld--
+# get all the details
+firewall-cmd --list-all
+
+# add a port 
+firewall-cmd --zone=public --add-port=3306/tcp --permanent
+
+# remember to reload the firewall after making a change
+firewall-cmd --reload
+
+---------- [master server] create backup -------------------------
+
+# create the backup folder. in this case we will use /wsm/db_temp
+mkdir -p /wsm/db_temp
+
+#make the backup
+xtrabackup --backup --user=root --password=PASSWORD --target-dir=/wsm/db_temp
+
+#clean the backup
+xtrabackup --user=root --password=PASSWORD --prepare --target-dir=/wsm/db_temp
+
+--------- [slave server] prep data directory ------------------------
+
+#stop mariadb on the slave
+systemctl stop mariadb
+systemctl status mariadb
+
+#move the original mysql directory
+mv /var/lib/mysql /var/lib/mysql_old
+
+
+----------[master server] copy over data and create replication user ---------------------
+
+#rsync data over
+rsync -avpP -e ssh /wsm/db_temp/ root@slave_ip:/var/lib/mysql
+
+# add in the replication user to the master mysql
+GRANT REPLICATION SLAVE ON *.*  TO 'repl'@'$slaveip' IDENTIFIED BY 'PASSWORD';
+flush privileges; 
+
+# copy over my.cnf file to slave if neccessary 
+
+
+----------[slave server] -----------------------------
+
+# reset permissions on data directory
+chown -R mysql:mysql /var/lib/mysql
+
+# verify connectivity to master
+mysql -u repl -p -h MASTER_IP
+
+# make server-id in /etc/my.cnf is 2 or different from master
+
+# start mariadb
+systemctl start mariadb
+
+# get bin log number. if this file doesn't exist it means log-bin was not on in the master my.cnf 
+cat /var/lib/mysql/xtrabackup_binlog_info
+
+# execute change master command, using the username, password, bin name, and number
+# bin name will be similar to mariadb-bin.000001
+
+CHANGE MASTER TO MASTER_HOST='$masterip', MASTER_USER='repl', MASTER_PASSWORD='PASSWORD', MASTER_LOG_FILE='BIN_NAME', MASTER_LOG_POS=BIN_NUMBER;
+
+start slave;
+
+#check slave status in mysql
+show slave status \G
+
+# check status from cli 
+mysql -e "show slave status\G;" | egrep "(Slave_IO_Running|Slave_SQL_Running|Seconds_Behind_Master)"
+
+
+
+================================================================
+OPTIONAL : Promote the new Slave to be the new Master 
+================================================================
+
+# ref
+https://mariadb.com/kb/en/changing-a-slave-to-become-the-master/
+
+-------- old master -------------------
+
+# gracefully stop the old master
+# set the master to read only
+flush tables with read lock;
+
+# shutdown old master server
+shutdown;
+
+------ old slave (new master) ----------
+
+# commands to turn the slave into a new master
+STOP ALL SLAVES;
+RESET SLAVE ALL;
+SHOW MASTER STATUS;
+SELECT @@global.gtid_binlog_pos;
+SET @@global.read_only=0;
+
+
+----- optionally point other slaves at the new master --------
+
+# On the other slaves you have point them to the new master (the slave you promoted to a master).
+
+STOP SLAVE [connection_name];
+CHANGE MASTER [connection_name] TO MASTER_HOST="new_master_name",
+MASTER_PORT=3306, MASTER_USER='root', MASTER_USE_GTID=current_pos,
+MASTER_LOG_FILE="XXX", MASTER_LOG_POS=XXX;
+START SLAVE;
+
+# The XXX values for MASTER_LOG_FILE and MASTER_LOG_POS should be the values you got from the SHOW MASTER STATUS command you did when you finished setting up the slave.

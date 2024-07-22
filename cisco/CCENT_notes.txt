@@ -1,0 +1,245 @@
+ CCENT Study Sheet
+
+Cable Types
+//cross over cable
+(like to like)
+switch to switch
+router to router
+hub to switch
+router to host
+
+//straight cable
+router to switch
+switch to host
+
+VTY and Console Setup
+//console configuration. Password and jump to global exec
+(config)#line con 0
+(config-line)#password cisco
+(config-line)#privilege level 15
+
+//encrypt all passwords
+(config)# service password-encryption
+
+//setup ssh. Rename switch. Set domain. Setup crypto. Enable ssh. Set vty to login local
+(config)#hostname wanda
+(config)#username bob secret cisco
+(config)#ip domain-name local.com
+(config)#crypto key generate rsa  (choose 1024)
+(config)#ip ssh version 2
+(config)#line vty 0 15
+(config-line)#transport input ssh
+(config-line)#login local
+
+//you will also need to set an enable secret
+(config)#enable secret bobsburgers
+
+Switchport Interface Stats
+#show int f0/11
+//collisions should never occur during full duplex. Implies duplex mismatch/running on ½ duplex or plugged into hub
+//late collisions : collision after the first 32 bytes. Non-standard collision. Always caused by duplex mismatch
+//CRC errors imply interference or corruption on the data cable
+
+Switchport Configuration
+//configure for 100 full
+(config-if)#speed 100
+(config-if)#duplex full
+
+//signs of a duplex mismatch from [show int] data
+input queue drops
+output queue drops
+input errors
+output errors
+
+Switchport Security
+//enable port security on a port
+(config-if)#switchport port-security
+
+//max of one ip address
+(config-if)#switchport port-security maximum 1
+
+//default violation is a port shutdown
+(config-if)#switchport port-security violation shutdown
+
+//configure sticky mac. (whatever mac is currently configured becomes permanent for the port)
+//have to “copy run start” after mac becomes sticky because it is saved in running-config
+(config-if)#switchport port-security mac-address sticky
+
+//show config for an interface
+#show port-security int f0/14
+
+//bring a port back up from err-shutdown by cycling it.
+(config-if)#shutdown
+(config-if)#no shutdown
+
+VLAN
+//create vlan 10
+(config)#vlan 10
+(config-vlan)#name batmanlan
+
+//add a port to a vlan
+(config)# int f0/1
+(config-if)# switchport access vlan 2
+//or configure a range
+(config)# int range f0/15-18
+..etc
+
+//show vlan membership
+#sh vlan
+
+//sh vlan info on a specific port
+#sh int fa0/1 switchport
+
+
+
+Trunk/Access ports
+//turn a switchport into a trunk
+//on some switches you have to set the encapsulation
+//(config-if)#switchport trunk encapsulation dot1q
+(config)# int f0/1
+(config-if)# switchport mode trunk
+
+//show trunks and membership
+#sh int trunk
+//or
+#sh int f0/1 switchport
+
+Router on a Stick IVR
+//switch config
+(config)# int f0/1
+(config-if)#switchport mode trunk
+(config-if)# int f0/2
+(config-if)#switchport access vlan 2
+(config-if)# int f0/3
+(config-if)#switchport access vlan 3
+
+//router configure
+(config)#int f0/0
+(config-if)# ip address 192.168.10.1 255.255.255.0
+(config-if)#no shutdown
+(config-if)#int f0.0.2
+(config-subif)#encapsulation dot1q 2
+(config-subif)#ip address 172.16.10.1 255.255.255.128
+(config-subif)#int f0/0.3
+(config-subif)#encapsulation dot1q 3
+(config-subif)#ip address 172.16.10.254 255.255.255.128
+
+//configure vlan1 and default gateway on the switch
+(config)# int vlan1
+(config-if)# ip address 192.168.10.2 255.255.255.0
+config-if)# no shutdown(config)# ip default-gateway 192..168.10.1
+
+Layer 3 Switch IVR
+(config)#ip routing
+(config)#int vlan 10
+(config-if)# ip address 192.168.10.1 255.255.255.0
+(config-if)#int vlan 20
+(config-if)#ip address 192.168.20.1 255.255.255.0
+
+
+DHCP Router Config
+// the only mandatory things are a pool name and a ip network/subnet
+(config)#ip dhcp excluded-address 192.168.10.1
+(config)#ip dhcp pool Dani_DHCP
+(dhcp-config)#network 192.168.10.0 255.255.255.0
+(dhcp-config)#default-router 192.168.10.1
+
+Static Routing
+//syntax
+ip route [detination_network] [mask] [next-hop_address or exitinterface (ex: f0/0)] [administrative_distance] [permanent]
+
+//setup a default route. last ip is the ip of the next hop router on the internet connection.
+(config)#ip route 0.0.0.0 0.0.0.0 24.255.102.177
+
+//show the configured routes
+sh ip route
+
+OSPF Routing
+//remember wildcard is one less than block. 0 is strict, 255 is wild
+//router configuration
+(config)#router ospf 1
+(config-router)#network 192.168.10.16 0.0.0.7 area 0
+(config-router)#network 10.255.255.8 0.0.0.3 area 0
+
+//sh
+#sh ip ospf
+//show routes
+//sh ip route ospf
+
+ACL
+//standard ACL 1-99. expanded ranger 1300-1999
+//standard ACLs work by examining the source IP address in a packet
+
+//standard ACL
+(config)#access-list 10 deny 172.16.40.0 0.0.0.255
+(config)#access-list 10 permit anything
+(config)#int fa0/1
+(config-if)#ip access-group 10 out
+
+//secure VTY(Telnet/SSH) Access
+(config)#access-list 50 permit host 172.16.10.3
+(config)#line vty 0 4
+(config-line)#access-class 50 in
+
+//named ACL
+(config)# ip access-list standard blocksales
+
+//show access lists
+#sh access-lists
+//or
+#sh ip access-lists
+
+Extended ACL
+//extended ACL 100-199. expanded 2000-2699
+//syntax
+access-list [ACL #] [deny/permit] [protocol] [source address] [destination address] eq [service or port #][log]
+
+(config)#access-list 110 deny tcp any host 172.16.30.2 eq 23 log
+(config)#access-list 110 permit ip any any
+(config) int f0/1
+(config-if) ip access-group 110 in
+
+//named extended ACL
+(config)#ip access-list extended blocksales
+
+//show access lists
+#sh access-lists
+//or
+#sh ip access-lists
+
+//use sh ip int fa0/0 to see what inbound and outbound ACL has been applied to the interface
+
+NAT
+(config)#ip nat inside source static 10.1.1.1 170.46.2.2
+
+//on inside interface
+(config-if)#ip nat inside
+//on outside interface
+(config-if)#ip nat outside
+
+#show ip nat translations
+
+PAT
+(config)#ip nat pool globalnet 170.168.1.1 170.168.1.1 netmask 255.255.255.0
+(config)#ip nat inside source list 1 pool globalnet overload
+(config)#access-list 1 permit 10.1.1.0 0.0.0.255
+
+//on inside interface
+(config-if)#ip nat inside
+//on outside interface
+(config-if)#ip nat outside
+
+IPv6
+8x 16 bit segments
+64 network bits and 64 host bits
+
+unicast: one to one
+multicast: one to many
+anycast: one to closest
+broadcast: does not exist in IPv6. Replaced with multicast
+
+Links-local scope address: layer 2 domain. Similar to 169.xxx auto addresses FE80::/64
+Unique/Site-local scope address: organization
+Global scope address: internet. First three bits set to 001 (usually results in hex of 2000 or 2001 )
+
+EUI-64: insert FF:FE into a MAC address to make up the 64 bit host segment

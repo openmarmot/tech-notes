@@ -1,0 +1,60 @@
+EX2200 Setup
+Clear config
+#delete
+Set Root Password
+#set system root-authentication plain-text-password
+Upgrade Junos
+see JUNOS_upgrade.odt
+Set Hostname
+#set system host-name labex2200
+Set Time and Timezone
+//the date is in the form YYYYMMDDhhmm.ss
+>set date 201406131849.00
+#set system time-zone America/Phoenix
+//verify
+>show system uptime
+Set Domain Name
+#set system domain-name sample.com
+Set Login Banner
+#set system login message "Unauthorized Access is Prohibited"
+Create a Local User
+#edit system login
+#edit user andrew
+#set authentication plain-text-password
+#set class super-user
+Enable Remote Access
+#set systen services ssh root-login deny
+#set system services ssh protocol-version v2
+//at this point you should be able to ssh in to the OOB management port
+Create a VLAN
+#edit vlans
+//"vlan_12" is the vlan name and is only locally significant
+#set vlan_12 vlan-id 12
+#set
+Create an Access Port
+#edit interfaces ge-0/0/0
+//you can use the vlan id or the vlan name
+#set unit 0 family ethernet-switching vlan members 12
+Create a Trunk Port
+#edit interfaces ge-0/0/23
+#set unit 0 family ethernet-switching port-mode trunk
+#set unit 0 family ethernet-switching vlan members 12
+#set unit 0 family ethernet-switching vlan members 1
+Disable Alarm for Management Interface
+#set chassis alarm management-ethernet link-down ignore
+---------------------------------------------LAYER 3 Switch Setup----------------------------------------
+Make L3 Connection to Next Hop Router
+#set interfaces ge-0/0/23 unit 0 family inet address 10.6.2.2/30
+#set interfaces ge-0/0/23 unit 0 description "L3 to Edge"
+Update Default Route to Next Hop
+#edit routing-options
+//delete any previous static routes
+#delete static
+#set static route 0.0.0.0/0 next-hop 10.6.2.1
+Create Routed Virtual Interfaces (RVI)
+//create RVI
+#edit interfaces
+#set vlan unit 2 family inet address 192.168.2.1/24
+//bind to a vlan
+#edit vlans
+#set vlan_2 l3-interface vlan.2

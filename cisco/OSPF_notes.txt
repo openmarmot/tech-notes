@@ -1,0 +1,146 @@
+Multi Area OSPF Notes
+
+Links State Advertisements (LSAs): Link state protocols do not exchange routes or metrics. Instead they exchange the state of their links and the cost associated with those links.
+
+As LSAs arrive from OSPF neighbors the router places them into a Link State Database. Later the router performs a series of computations against the LSDB contents, giving the router a complete picture of the network. This series of computations is known as the Shortest Path First (SPF) algorithm, also referred to as the Dijkstra algorithm.
+
+Each LSA is refreshed every 30 minutes and when there is a network change
+
+Before LSAs can be exchanged neighbor adjacencies must be formed
+
+You can see the LSDB with the #show ip ospf database command
+
+Designated router: the interface with the highest priority becomes the DR. 2nd highest priority becomes the bdr. the designated router is the router that will recieve the LSA regarding the network change from the router that detected the change. The DR will then flood the LSA indicating the network change to all non-DR and non-BDR routers.
+
+The router detecting the change sends the update to the DR and BDR on 224.0.0.6. The DR then floods the change to 224.0.0.5, the same address on which hello packets are sent (all routers listen on this address).
+
+Routers that are neither the DR nor the BDR for a given network segment are indicated in #show ip ospf neighbors as DROTHERS
+
+remember that routers do not forward multicast and broadcast traffic. that means that a DR must be the hub in a hub and spoke router (ie if a spoke was DR it wouldn't be able to flood changes to the other spokes through the hub)
+
+OSPF Hellos
+The Hello timer defines how often OSPF hello packets will be multicast to 224.0.0.5
+OSPF Hellos allow neighbors to discover eachother and allow neighbors to remind eachother they are still there (and stay neighbors)
+OSPF-enabled interfaces send hello packets at regularly scheduled intervals. The default intervals are 10 seconds on a broadcast segment like ethernet, and 30 seconds for non-broadcast links such as serial links. 
+
+Keep in mind that by default the hello times will mismatch between serial and PTP interfaces
+
+OSPF Dead Timer: the dead timer is how long an OSPF router will wait to hear a hello from an existing neighbor. When the dead timer expires the adjacency is dropped. 4 times the hello time by default
+#sh ip ospf neighbors  //shows dead times
+
+OSPF Adjacency
+For an OSPF adjacency the following must match
+-Area ID
+-Subnet
+-Hello and Dead times
+-Authentication (if configured)
+
+Unlike EIGRP, the OSPF process ID does not have to match to form an adjacency
+
+//show a specific OSPF interface
+#sh ip ospf int e0  /leave e0 off to get information about all interfaces
+
+#debug ip ospf hello
+#u all //turn all debugging off
+
+LSU/LSA
+The LSU (link state update) carries the LSA (link state advertisement)
+LSAs are first exchanged between OSPF routers when adjacency reaches the 2-way state
+
+
+OSPF Adjacency States:
+Down: the first OSPF adjacency state. no hello packet has been received from the router
+Attempt: only seen in NBMA networks. ATTEMPT means a unicast hello packet has been sent to the router, but no reply has been received.
+Init: a hello packet has been received from the remote router, but it didn't contain the local router's OSPF RID. this means this HELLO is not serving as an ACK of any HELLO packets the local router sent
+2-Way: the "we're almost there!" state. two seperate actions can bring an adjacency to 2-way:
+-the local router receives a HELLO with its own RID in there
+-the local router is in the INIT stage of an adjacency and then receives a Database Descriptor (DD) packet from a potential neighbor.
+EXSTART: DBD packets continue to be exchanged. It's the EXchange START
+Loading: LSAs are requested, received, and loaded into the LSDB
+Full: the adjacencies are in place and databases are synced.
+
+Areas:
+help limit the impact of network changes (prevents huge databases by splitting areas up)
+
+Internal router: all interfaces in one, non-backbone area
+
+Backbone router: all interfaces in the backbone area (0)
+
+Area Border Router (ABR): a router with at least one interface in Area 0 and at least one other interface in another area
+
+Autonomous System Border Router (ASBR): a router that is performing route redistribution into OSPF. (not covered by CCNA)
+
+Non-backbone areas: Area 0 is the backbone area. every non-backbone area must contain at least one router that also has an interface in Area 0.
+
+Basic Config:
+(config)#router ospf 1  //1 is the process id. does not matter between routers
+(config-router)#network 10.0.0.0 0.255.255.255 area 0
+
+OSPF Priority: 
+-interface with the highest priority becomes DR
+-interface with the second highest priority becomes BDR
+-default priority is 1
+
+//setting priority to zero basically disqualifies the IF from being a DR or BDR
+(config-if)#ip ospf priority 0  //0-255  default 1. highest wins DR, 2nd wins BDR
+
+Configure a neighbor:
+only needed on the hub of a hub and spoke
+(config-router)#neighbor 172.12.123.2
+
+#sh ip route
+c==connected
+o==ospf
+IA==ospf inter area. the local router does not have an interface in the area this router is in
+[110/65]==[Administrative Distance/Cost]
+
+OSPF administrative distance is 110.
+AD is a measure of a routes reliability (255 is completely unreliable)
+
+#sh ip protocol //will tell what type of router this is (ie: area border)
+
+OSPF Router ID (RID)
+By default the OSPF Router ID (RID) will be the numerically highest IP address of all loopback interfaces configured on the router. If there is no loopback the highest IP on the physical interfaces will be the RID. The interface does not have to be OSP enabled, it just has to be up. Router ID must be unique. Neighbor relationship will not come up between two routers with the same RID.
+IPV6 OSPF still requires a IPV4 RID. 
+//hardcode RID
+(config)#router ospf 1
+(config-router)#router-id 11.11.11.11
+This requires reloading the router or "clear ip ospf process" command
+
+Link State Advertisement (LSA)
+-LSA are generated by every router
+-LSA do not leave the area they are generated in (except for type 3 summary LSA) !
+-view LSA with the #sh ip ospf database" command
+-type 3 summary LSA are only generated by area border routers
+
+-type 1 LSA: RLA router link advertisement. sent by every router to other routers in its area. contains the status of a routers link in the area to which it is connected.
+
+-type 2 LSA: Network Link Advertisement (NLA). Generated by designated routers (DR). Sends out information about the state of other routers that are part of the same network
+
+-type 3 LSA: Summary Link Advertisement (SLA). Generated by area border routers. sent to the area external to o the one where they were generated
+
+-type 4 LSA: generated by area border routers. ABRs send a type 4 LSA toward the area external to the one in which they were generated. used to inform the rest of the ospf areas how to get to the ASBR
+
+-type 5 LSA: External link advertisements. Sent by autonomous system boundry routers to advertise routes that are external to the OSPF autonomous system and are flooded everywhere. A type 5 LSA is generated for each individual external network advertised by the ASBR
+
+Default information originate:
+//allow a router to propagate a default route
+(config-router)#default-information originate
+
+//propagates a default route even if it doesnt have one
+(config-router)#default-information originate always
+
+Interface costs
+reference bandwidth: must be consistent across all routers in the network. For a highest port speed of 1 Gb the reccommended reference bandwidth is 1000
+
+(config-router)#auto-cost reference-bandwidth 10000
+
+Passive Interface: suppress routing updates on an interface
+(config-router)#passive-interface e0  //what this really does is supress hellos
+
+OSPF Point to Point Networks
+-an ospf PtP network does not have a DR or BDR
+-shows up as "network type Point_to_Point" in #sh ip ospf int s1
+
+
+ 
