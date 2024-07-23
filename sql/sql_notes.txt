@@ -1,0 +1,299 @@
+Linux Academy 
+SQL Primer
+Notes
+
+-- 
+last update : December 11 2018
+
+--
+
+SQL stands for Structured Query Language
+
+
+#mariaDB get version
+select version();
+
+#view all databases
+show databases;
+
+#create a database
+create database dbCustomerInfo;
+
+# drop (delete) database
+drop database dbTest;
+
+#switch context to a specific database
+use dbCustomerInfo;
+
+#view all tables
+show tables;
+
+#create table (column-name column-type(column-size), ) 
+create table tblCustomerInfo (custInfoFirstName varchar(50),custInfoLastName 
+varchar(50),custInfoAddr1 varchar(50),custInfoAddr2 varchar(50) ,
+custInfoCityName varchar(50),custInfoState varchar(10),custInfoZipCode 
+varchar(10),custInfoPhone varchar(12));
+
+# Drop (delete) table
+drop table;
+
+# -------------------- constraints --------------------
+'''
+contstraints :
+- not null : a value must be entered
+- unique : row values must be unique
+- primary key (unique+not null)
+- foreign key
+- check : checks a condition
+- default : specifies default value
+
+'''
+
+#show fields
+show fields from tblCustomerInfo
+
+#primary key constraint: each row value is unique, cannot be null
+# shows up as 'PRI' under the Keys column when you show fields
+
+#create a table with the first column having a PRIMARY KEY constraint
+create table tblCustomerIDInfo (custID varchar(10) primary key,custInfoFirstName
+varchar(50),custInfoLastName varchar(50),custInfoAddr1 varchar(50),
+custInfoAddr2 varchar(50),custInfoCityName varchar(50),custInfoState 
+varchar(10),custInfoZipCode varchar(10),custInfoPhone varchar(12));
+
+# ----------------- insert into -----------------------
+
+#switch databases
+use dbCustomerInfo;
+
+# review table fields
+show fields from tblCustomerInfo;
+
+#insert some values 
+#INSERT INTO tableName (field,field) VALUES ('data','data')
+INSERT INTO tblCustomerInfo (custInfoFirstName,custInfoLastName,custInfoAddr1,
+custInfoAddr2,custInfoCityName,custInfoState,custInfoZipCode,custInfoPhone)
+VALUES ('John','Smith','111 Main St','','Anytown','NY','43211','2123445544');
+
+# get ALL records from a table
+SELECT * FROM tsblCustomerInfo;
+
+#create another table for backup
+create table tblCustomerInfoBkup (custInfoFirstName varchar(50),custInfoLastName 
+varchar(50),custInfoAddr1 varchar(50),custInfoAddr2 varchar(50) ,
+custInfoCityName varchar(50),custInfoState varchar(10),custInfoZipCode 
+varchar(10),custInfoPhone varchar(12));
+
+#insert contents of one table into another
+# will not overwrite existing data
+# this is a common way to backup a table
+INSERT INTO tblCustomerInfoBkup SELECT * FROM tblCustomerInfo;
+
+
+# ------------------ select from ----------------------------------
+
+use dbCustomerInfo;
+
+# get all values from a table
+SELECT * FROM tblCustomerInfo;
+
+#select specific columns (fields)
+SELECT custInfoCityName,custInfoState FROM tblCustomerInfo;
+
+#select specific fields with specific data
+SELECT custInfoLastName FROM tblCustomerInfo WHERE custInfoState='NY';
+
+# use LIKE to make it a fuzzy match, not case sensitive
+SELECT custInfoLastName FROM tblCustomerInfo WHERE custInfoState LIKE 'ny';
+
+# can also use != or <> for not equal
+
+# on numbers can also use > < >=
+
+
+#--------------- alter table -----------------------------------
+
+USE dbCustomerInfo;
+
+#add column to existing table
+ALTER TABLE tblCustomerInfoBkup ADD custInfoDOB varchar(10);
+
+# modify column type to 'year'
+# in earlier sql versions 'modify' would be replaced by 'alter column'
+ALTER TABLE tblCustomerInfoBkup MODIFY custInfoDOB year;
+
+
+# -------------- delete from ------------------------------
+use dbCustomerInfo;
+
+#delete specific records
+DELETE FROM tblCustomerInfoBkup WHERE custInfoState='OH'
+
+#more specific delete
+DELETE FROM tblCustomerInfoBkup WHERE custInfoFirstName='John' AND 
+custInfoLastName='Johnson'
+
+
+# ------------ create index -----------------------------
+
+use dbCustomerInfo;
+
+# indexes speed up data access, but slow down updates
+# indexes should use unique values
+# the more indexes you have on a table, the more you slow down writes 
+#  because each write has to update the table
+
+#create index
+# () specifies a column for the index to use as a key, but its optional
+CREATE INDEX indexCustInfoID ON tblCustomerIDInfo (custID);
+
+# create an index across two fields
+CREATE INDEX indexCustInfoNames ON tblCustomerIDInfo (custInfoFirstName,custInfoLastName);
+
+# -------------- drop table ----------------------------------
+
+use dbCustomerInfo;
+
+#drop table
+DROP TABLE tblTest;
+
+#drop an index from a table
+ALTER TABLE tblCustomerIDInfo DROP INDEX indexCustInfoID;
+
+# --------------- truncate table ---------------------------
+use dbCustomerInfo
+
+#use truncate to empty out a table
+# often used to wipe out old logs
+TRUNCATE TABLE tblCustomerInfoBkup;
+
+# -------------- auto increment --------------------------
+
+#integer value that can be assigned as a type constraint in a column
+# automatically increments by one everytime the table is updated
+
+USE dbCustomerInfo;
+
+#
+CREATE TABLE tblEmpInfo(empID int PRIMARY KEY AUTO_INCREMENT,empLastName varchar(50),
+empSSN varchar(11);
+
+#add some records
+INSERT INTO tblEmpInfo (empLastName,empSSN) VALUES ('Smith','111111111');
+
+#change the increment
+ALTER TABLE tblEmpInfo AUTO_INCREMENT=1000;
+
+#change an existing field to be auto increment
+ALTER TABLE tblCustomerIDInfo MODIFY custID int AUTO_INCREMENT;
+
+
+# ------------ count function ------------------------
+
+USE dbCustomerInfo;
+
+#get a row count
+SELECT COUNT(*) FROM tblCustomerInfo;
+
+# count of distinct (unique) rows on a specific column
+SELECT COUNT(DISTINCT custInfoLastName) FROM tblCustomerInfo;
+
+# get fancy
+SELECT COUNT(custInfoState) FROM tblCustomerInfo WHERE custInfoState='NY';
+
+
+# ------------- average and sum functions -----------------
+
+USE dbCustomerInfo;
+
+
+# get an average of the row values in a column
+SELECT AVG(invNumberItems) FROM tblInvoices;
+
+#get count and average
+SELECT COUNT(*),AVG(invNumberItems)
+
+# get a sum
+SELECT SUM(invNumberItems) FROM tblInvoices;
+
+# ------------ Like Operator ---------------------
+
+USE dbCustomerInfo;
+
+# anything that ends with a 'S'. % sign is a wildcard
+SELECT * FROM tblCustomerInfo WHERE custInfoLastName Like '%S';
+
+# use % on both sides to find words with specific characters in the middle
+SELECT * FROM tblCustomerInfo WHERE custInfoLastName Like '%mit%';
+
+# ---------- Create View --------------------------
+
+# a view is a table that contains the result set from a select statement
+# basically a way to save the results of a query for future use
+
+# create a view
+CREATE VIEW [myView] AS SELECT COUNT(*),AVG(invNumberItems) FROM tblInvoices
+
+# --------- Inner Join ---------------------------
+
+USE dbCustomerInfo;
+
+#inner join will return all rows where there is at least one match in both tables
+
+#
+SELECT tblOrders.ordID,tblCustomerIDInfo.custInfoLastName,
+tblCustomerIDInfo.custInfoFirstName,tblOrders.ordDate FROM tblOrders INNER JOIN 
+tblCustomerIDInfo on tblOrders.ordID=tblCustomerIdInfo.ordID;
+
+# --------- Left Join ------------------------------
+
+# all records from the left table and matching records from the right table
+#values that exist in the left but not the right will still display, but will indicate
+#that there is no associated value in the right table
+
+SELECT tblCustomersIDInfo.custInfoLastName,tblOrders.ordID FROM 
+tblCustomerIDInfo LEFT JOIN tblOrders on tblCustomerIDInfo.custID=tblOrders.custID
+ORDER BY tblCustomerIdInfo.custInfoLastName
+
+# ---------- Right Join ----------------------------
+
+# --------- Full Join ----------------------------
+
+# -------- Union ---------------------------------
+
+#union allows multiple selects in the same statement
+# selections must be equal number of columns
+
+SELECT tblCustomerIDInfo.custID,tblCustomerIDInfo.custInfoLastName,
+tblCustomerIDInfo.custInfoFirstName FROM tblCustomerIDInfo UNION
+SELECT * FROM tblOrders;
+
+# --------- Sorting Records ---------------------
+
+#sort lowest to highest, only get one record back
+SELECT * FROM tblCustomerIDInfo ORDER BY custID ASC LIMIT 1
+
+#opposite of ASC is DESC
+
+# --------- Minimum and Maximum Values ------------
+
+#get minimum value
+SELECT MIN(custID) FROM tblCustomers;
+
+#get max value
+SELECT MAX(custID) FROM tblCustomers;
+
+#---------- Upper and Lower Case Conversions -------
+
+#make results uppercase 
+SELECT UCASE(custInfoFirstName) FROM tblCustomerIDInfo;
+
+#lower case is LCASE
+
+# ------- Now() -------------------------
+# now function returns the current system date and time
+
+#add a field to results with the current datetime
+SELECT prodID,prodName,prodPrice,Now() AS prodPriceDate FROM tblProducts;
+
+

@@ -1,0 +1,24 @@
+
+SSH into the ProxMox VE Host
+
+(These commands are for Intel)
+
+# write out nested config
+echo "options kvm-intel nested=1" > /etc/modprobe.d/kvm-intel.conf
+
+# remove module with old config
+modprobe -r kvm-intel
+
+# add module back in with new config
+modprobe kvm-intel
+
+# test - should return 'Y'
+cat /sys/module/kvm_intel/parameters/nested
+
+
+The response to the last command should be “Y”. If it isn’t than either your CPU doesn’t support nested virtualization, or something else went wrong.
+
+If you can I would recommend rebooting the host, just to double check that the setting took.
+
+
+Hardware can be basically the same but cpu should be 'HOST'

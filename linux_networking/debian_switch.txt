@@ -53,4 +53,5 @@ brctl showstp br-vlan11
 thoughts
 -----------------------------------------------
 //management ports
-according to the man page for brctl only ports that are added to the bridge will be considered as an option for forwarding frames. therefore assign an ip to an interface, connect it to an access port of another switch, and do not assign the port to a bridge, and it will act as a seperated management port. 
+according to the man page for brctl only ports that are added to the bridge will be considered as an option for forwarding frames. 
+therefore assign an ip to an interface, connect it to an access port of another switch, and do not assign the port to a bridge, and it will act as a seperated management port. 

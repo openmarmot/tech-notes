@@ -1,0 +1,25 @@
+Git branching strategies 
+
+# ---- Gitflow ------
+
+
+Follow the 'Gitflow' branching strategy 
+
+-- links --
+https://nvie.com/posts/a-successful-git-branching-model/
+
+
+-- main (permanent) branches --
+- master : branch from which software is released to production
+- develop : branch that holds the latest updates for the next release
+
+-- supporting (temporary) branches --
+- feature : a small branch for a feature. 
+    - branched from develop and merged back into develop when complete
+- release candidate : a branch for a release candidate.
+    - labeled with a release number.
+    - branched from develop
+    - merged into master and develop when done.
+- hotfix 
+    - fix to deployed code in between release candidates
+    - branched from master, merged back into master when done

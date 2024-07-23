@@ -1,0 +1,43 @@
+
+Setup AD Domain Controller
+
+-- notes --
+andrew 
+last update : March 30 2020
+
+-- sources --
+https://www.youtube.com/watch?v=pRf_uU0vrMM
+
+
+-- setup --
+
+1. open server manager
+
+2. Manage -> Add roles and features -> Role based or feature based installation
+    -> select the local server ->
+3. check box for 'Active Directory Domain Services' and box for 'DNS Server'
+
+4. next next next restart - ok, install
+
+5. click the little flag in server manager -> 
+    post deployment configuration -> Promote this server to a domain controller
+    
+6. Add a new forest (if you don't have any existing DCs)
+  specify domain name (maybe cats.local)
+  
+7. skip dns delegation
+    next next next.  install 
+    
+computer will restart 
+
+wait FOREVER for windows to login after it restarts
+
+
+
+--- test stuff ---
+
+1. windows administrator tools -> active directory users and computers
+ - make sure your domain shows up
+ 
+2. windows administrator tools -> DNS -> forward lookup zone
+- make sure your domain shows up

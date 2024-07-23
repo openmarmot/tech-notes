@@ -1,0 +1,26 @@
+1) Break the subnet out into bits. Remember there are 32 bits seperated into 4 bytes.
+
+[1-8] [9-16] [17-24] [25-32]
+
+2) What octet does the CIDR fit into?
+
+/27 is in the 4th octet ( [25,26,27,28,29,30,31,32])
+
+3) Set all preceding octets to binary 1 (255 in decimal)
+
+/27 = 255.255.255.X
+
+4) Count how many bits are used in the octet
+
+/27 = 25+26+27 == 3 bits used
+
+5) Convert the binary to decimal, remembering that subnet masks fill up with “1″s from left to right
+
+3 bits used == 11100000 in binary == 128 + 64 + 32= 224 in decimal
+
+5b) alternatively just count up on this chart for the number of bits
+128 192 224 240 248 252 254 255
+
+6) Put it all together
+
+/27 == 255.255.255.224 

@@ -1,0 +1,16 @@
+
+last update : dec 02 2022
+
+virtio with 128 mb of ram seems to work well.
+- seems better than spice. way less choppy
+- multiple open at once seems fine
+- low cpu 
+
+client side
+- needs a spice viewer
+-- fedora : remote viewer from the app store
+-- windows : virt viewer client : https://virt-manager.org/download/
+
+once you have the spice viewer, click on the vm, it downloads a .vv file. open 
+that and it jumps into the viewer
+

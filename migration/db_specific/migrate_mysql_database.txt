@@ -1,0 +1,75 @@
+migrate mysql database
+
+--notes--
+last update : March 20 2018
+
+-- source--
+
+--MYSQL Notes--
+#add -h IP_OR_FQDN to do the command against a remote host
+
+
+-- migration : recon and backup  --
+
+# login to mysql on the source server
+mysql -u USERNAME -p 
+
+# (MYSQL) check what databases are available
+show databases;
+
+# mysql -- database size
+SELECT table_schema AS "Database name", SUM(data_length + index_length) / 1024 / 1024 AS "Size (MB)" FROM information_schema.TABLES GROUP BY table_schema;
+
+# (MYSQL) check the database engine for the tables in a database
+show table status from DATABASE_NAME;
+
+# (MYSQL) check users (only works when logged in with root)
+#passwords are encrypted
+select user, host, password from mysql.user;
+
+#(MSQL) exit mysql
+exit;
+
+#perform a mysql dump
+# --add-drop-databases :  adds a command to drop the database first on the restore
+# --databases : makes sure the commands to create a database with the same name are #included
+mysqldump --add-drop-database --databases -u root -p DATABASENAME > FILENAME.sql
+
+-- migration :  optional transfer file --
+# rsync must be installed on both hosts
+# ~ indicates send it to the user’s home directory
+rsync -avz -e "ssh" --progress SOURCE_FILE USERNAME@IP:~
+
+
+-- migration : restore on final host --
+
+# log into mysql on the destination server as root to create users
+mysql -u root -p
+
+#check existing users
+select user, host, password from mysql.user;
+
+# create the user(s) that you need. you can use an IP or localhost
+create user 'USERNAME'@'IP' IDENTIFIED BY 'PASSWORD';
+
+# check if the database you need to add already exists
+show databases;
+
+# create the database if it doesn’t already exist
+create database DATABASE_NAME;
+
+# grant priviledges to your user(s) that you just created
+grant all privileges on DATABASE_NAME.* to USER@IP;
+
+# flush privileges
+flush privileges;
+
+#exit mysql
+exit;
+
+# restore the database 
+mysql -u USERNAME -p <FILENAME.sql
+
+#make sure to change the various database configs in the php files
+
+

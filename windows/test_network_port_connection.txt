@@ -1,0 +1,4 @@
+ Test-NetConnection -Port 443 -ComputerName 52.53.92.136
+ 
+ #powershell
+ TNC 10.246.119.54 -port 22
