@@ -22,6 +22,6 @@ Note: * "porgn_" - tables prefix set in wp-config.php
 MySql query: 
 
 
-UPDATE porgn_options SET option_value = replace(option_value, 'https://beta.c-path.org', 'https://c-path.org') WHERE option_name = 'home' OR option_name = 'siteurl';
-UPDATE porgn_posts SET post_content = replace(post_content, 'https://beta.c-path.org', 'https://c-path.org');
-UPDATE porgn_postmeta SET meta_value = replace(meta_value,'https://beta.c-path.org', 'https://c-path.org');
+UPDATE porgn_options SET option_value = replace(option_value, 'http://beta.example.com', 'http://example.com') WHERE option_name = 'home' OR option_name = 'siteurl';
+UPDATE porgn_posts SET post_content = replace(post_content, 'http://beta.example.com', 'http://example.com');
+UPDATE porgn_postmeta SET meta_value = replace(meta_value,'http://beta.example.com', 'http://example.com');
