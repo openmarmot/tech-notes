@@ -1,0 +1,24 @@
+# ---- steps -------
+
+# stop mysql
+systemctl stop mariadb
+
+# rsync files - this will move the 'mysql' folder
+rsync -av /var/lib/mysql /NEW_LOCATION
+
+# rename the old mysql folder
+mv /var/lib/mysql /var/lib/mysql.bak
+
+# optionally modify data locations in my.cnf
+vi /etc/my.cnf
+
+# soft link to catch any other bits
+ln -s /NEW_LOCATION/mysql /var/lib/mysql
+
+# maybe do some selinux or apparmour bits if you are using that stuff
+
+# start
+systemctl start mariadb
+
+# in mysql cli, double check data dir
+select @@datadir;

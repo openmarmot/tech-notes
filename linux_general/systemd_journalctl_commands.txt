@@ -1,0 +1,10 @@
+systemd journalctl commands 
+
+# sshd events 
+sudo journalctl -u sshd | tac | less
+
+# logs from a specific time 
+journalctl --since "2015-01-10" --until "2015-01-11 03:00"
+
+# network manager logs 
+sudo journalctl -u NetworkManager -b

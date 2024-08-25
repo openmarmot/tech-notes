@@ -1,0 +1,17 @@
+When you restore a SQL Server database backup, the database users are restored
+along with the database. However, the user information may not be automatically
+associated with the restored database.
+
+If you are seeing NULL in the LoginName column when listing users, it 
+likely means that the user has not been mapped to a login. In SQL Server,
+a login is a security principal that allows a user to connect to a SQL Server
+instance. A user is then associated with a login to allow them access to 
+a specific database.
+
+
+# create a login 
+CREATE LOGIN [LoginName] WITH PASSWORD = 'YourPassword';
+
+# associate with existing user
+USE [YourDatabaseName]
+ALTER USER [UserName] WITH LOGIN = [LoginName];

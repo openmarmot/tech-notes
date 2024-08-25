@@ -1,0 +1,27 @@
+
+# on al2, just edit /etc/sysconfig/iptables and systemctl reload iptables
+
+# alternative on al2
+iptables -I INPUT 4 -i docker0 -d 127.0.0.0/8 -p tcp -m tcp --dport 51679 -j ACCEPT
+/sbin/iptables-save > /etc/sysconfig/iptables
+
+# insert a rule by line number
+iptables -I INPUT 3 -p tcp -m state --state NEW -m tcp --dport 22 -j ACCEPT
+
+#detailed list with interfaces
+iptables -L -v
+
+#list in the same format that you would input in
+iptables -S
+
+#list by line number
+iptables -L --line-numbers
+
+#display nat rules
+iptables -t nat -L
+
+#delete by line number
+iptables -D INPUT 3
+
+#save iptables
+/sbin/service iptables save

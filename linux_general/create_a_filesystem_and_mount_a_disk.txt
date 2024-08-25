@@ -1,0 +1,26 @@
+
+# for RHEL like OS
+
+#use df to determine the drive naming format (IE : /dev/xvda, xvdb, etc
+df -h
+
+# search dev for available devices, making sure to use the appropriate name format
+ls -l /dev/xvd*
+
+# create a xfs filesystem on the new drive
+mkfs.xfs /dev/xvdb
+
+# make a directory for the new disk to mount to
+mkdir /test
+
+# add a line to fstab to auto mount it
+/dev/xvdb /test xfs defaults 0 0
+
+# re-mount all drives
+mount -a
+
+# check the new drive and mount point shows up
+df -h
+
+# reboot and double check
+shutdown -r now

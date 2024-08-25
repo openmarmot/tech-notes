@@ -1,0 +1,25 @@
+https://crontab.guru
+
+# -- example crons --
+
+note--- for python it works best if you CD to the directory and then run the script.
+Otherwise system commands don't seem to work
+
+# note - a lot of these are centos specific. use which to find the path for the command
+
+# runs the openmarmot eyeball domain monitoring script every 15 minutes
+*/15 * * * * cd /usr/local/sbin/eyeball && /usr/bin/python3 eyeball.py > /var/log/eyeball.log 2>&1
+
+#daily update and reboot at about 2am azt assuming server on udt and dnf pack man
+0 9 * * * dnf update -y; /usr/sbin/shutdown -r now
+
+#daily update and reboot  at about 2am azt assuming UDT timezone and yum pack man
+0 9 * * * yum update -y; /usr/sbin/shutdown -r now
+
+#auto shutdown server at around 11PM AZT 
+0 4 * * * /usr/sbin/shutdown -h now
+
+
+# -- find all cron jobs on a system --
+# run as root 
+for user in $(getent passwd | cut -f1 -d: ); do echo $user; crontab -u $user -l; done

@@ -1,0 +1,12 @@
+linux environment variables 
+
+# display current environment
+set
+
+# check value of a current variable
+echo $HOME
+
+# set a variable
+export VAR_NAM=VAR_VALUE
+
+# put this in ~/.bash_profile to make it permanent

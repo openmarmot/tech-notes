@@ -1,0 +1,27 @@
+# note - old and probably outdated 
+
+Changing the Site URL
+
+------sources-----------------
+http://codex.wordpress.org/Changing_The_Site_URL
+----------------- ---------------
+
+
+Edit wp-config.php
+It is possible to set the site URL manually in the wp-config.php file.
+Add these two lines to your wp-config.php, where "example.com" is the correct location of your site.
+define('WP_HOME','http://example.com');
+define('WP_SITEURL','http://example.com');
+This is not necessarily the best fix, it's just hardcoding the values into the site itself. You won't be able to edit them on the General settings page anymore when using this method.
+
+–
+mysql commands (need to switch to the database first)
+
+Note: * "porgn_" - tables prefix set in wp-config.php
+
+MySql query: 
+
+
+UPDATE porgn_options SET option_value = replace(option_value, 'https://beta.c-path.org', 'https://c-path.org') WHERE option_name = 'home' OR option_name = 'siteurl';
+UPDATE porgn_posts SET post_content = replace(post_content, 'https://beta.c-path.org', 'https://c-path.org');
+UPDATE porgn_postmeta SET meta_value = replace(meta_value,'https://beta.c-path.org', 'https://c-path.org');

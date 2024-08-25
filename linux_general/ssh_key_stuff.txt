@@ -1,0 +1,39 @@
+# ssh key related stuff 
+
+# ref : https://www.ssh.com/academy/ssh/keygen
+
+# -- setup --
+
+#generate ssh key pair on your desktop as root. here are some options: 
+ssh-keygen -t rsa -b 4096 (this one is probably the most compatbile)
+ssh-keygen -t dsa 
+ssh-keygen -t ecdsa -b 521  #this one is probably the most secure + compatible
+ssh-keygen -t ed25519 #possibly most secure, limited compatibility
+
+#this is saved in /home/andrew/.ssh/id_rsa
+
+#you can copy the public key into the new machine's authorized_keys file with the
+#ssh-copy-id command. Make sure to replace the example username and IP address below.
+
+ssh-copy-id user@123.45.56.78i
+
+#Alternatively, you can paste in the keys using SSH:
+
+cat ~/.ssh/id_rsa.pub | ssh user@123.45.56.78 "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"
+
+#once you are logged in, disable password logins
+# note - for fedora 39 and newer you will want to make a config file with your changes
+vim /etc/ssh/sshd_config
+
+#look for the line below and change yes to no 
+Password Authentication no
+
+#restart sshd
+#systemctl reload sshd
+
+# -- troubleshooting --
+#if you have trouble, check the permissions, this is often the issue 
+cd
+chmod 700 .ssh
+cd .ssh
+chmod 600 *

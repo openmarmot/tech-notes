@@ -1,0 +1,38 @@
+# note this is probably out of date 
+
+# backup and restore procedure for wordpress
+# tested on Centos 7 LAMP stack server
+# last updated : October 31 2016
+
+
+
+----backup----
+
+# tar and compress web files 
+sudo tar -zcvf html.tar.gz /var/www/html/
+
+# dump mysql database
+mysqldump -u root -p wordpress >dump.sql
+
+#sftp the files down from your home folder
+
+----restore----
+
+#sftp files up to your home folder on the new server
+
+# untar/unzip files
+tar -zxvf html.tar.gz
+
+#move the files (after clearing the directory)
+#cd to the directory with the files you just unzipped
+#move them
+sudo mv * /var/www/html/wordpress
+
+# fix ownership
+sudo chown apache:apache -R /var/www/html
+
+
+# restore mysql database (make sure to drop the database if it already exists)
+mysql -u root -p wordpress < dump.sql
+
+#setup mysql users as neccessary 

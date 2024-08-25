@@ -1,0 +1,19 @@
+firewalld common commands
+
+--commands---
+
+# get all the details
+firewall-cmd --list-all
+
+# list all active zones
+firewall-cmd --list-all
+
+
+# add a port 
+firewall-cmd --zone=public --add-port=8080/tcp --permanent
+
+# add port use default zone
+firewall-cmd --add-port=8080/tcp --permanent
+
+# remember to reload the firewall after making a change
+firewall-cmd --reload
