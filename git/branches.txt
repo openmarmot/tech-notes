@@ -1,0 +1,64 @@
+
+Creating a branch
+
+-- ref --
+https://opensource.com/article/19/7/create-pull-request-github
+
+https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/managing-branches
+
+---- if you want to create the branch in the CLI -----
+
+# list local and remote branches
+git branch -a 
+
+# create a new branch
+git checkout -b BRANCH_NAME
+
+# git status should show you are on your new branch
+git status
+
+# on the first push set the up stream origin
+git push --set-upstream origin BRANCH_NAME
+
+
+---- if you created the branch already in the UI for github/lab/bucket ----
+
+#  update your remote tracking branches
+git fetch
+
+# list all branches
+git branch -a 
+
+
+# checkout the one you want
+git checkout BRANCH_NAME
+
+
+--- if you want to pull the new changes from master back into your branch ---
+
+# get into the branch, only if you aren't already
+git checkout BRANCH_NAME
+
+# pull and merge master
+git pull origin master
+
+
+
+
+----- deleting a branch --------------------
+
+# see all remote branches
+git branch -r
+
+# delete a local branch 
+git branch -d  local_branch_name
+
+# delete a remote branch 
+git push origin -d test
+
+
+
+-------- merge a branch back into master ---------
+git checkout master
+
+git merge --squash BRANCH -m "super commit"

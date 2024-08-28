@@ -1,0 +1,7 @@
+yum localinstall
+
+# repoquery will find the url for a rpm download for the package 
+repoquery --queryformat="%{location}" packagename
+
+# then you can install it locally 
+yum localinstall packagename.rpm -y 

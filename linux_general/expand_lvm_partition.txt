@@ -1,0 +1,54 @@
+
+Expand a filesystem on LVM on a partition in Linux
+
+
+# resize your EBS Volume in AWS via the user interface
+
+# inspect the current block device situation
+# you should see the size of the device and any partitions
+# note which partition has LVM on it (possibly xvda2)
+lsblk
+
+# grow the partition that has LVM on it
+# note the space between device name and partition number
+# for xvda
+growpart /dev/xvda 2
+# for if the partition is nvme01p2
+growpart /dev/nvme0n1 2
+
+# verify that the partition is now larger with lsblk
+lsblk
+
+# check your LVM volume group config. Note Free PE/Size is still small
+vgdisplay
+
+# check current state of your physical volumes - note that it doesn't match the 
+# new partition size. note the physical volume name 
+pvs
+
+# resize and recheck. It should now match the partition size
+pvresize /dev/sda2 or pvresize /dev/xvda2
+pvs
+vgdisplay
+
+# display logical volumes, noting the name and size of the one you want to resize
+lvdisplay
+
+# extend the volume you want to extend and recheck 
+# here I am adding 20 Gigabytes to the home logical volume
+lvextend -L +20G /dev/rootvg/home
+lvdisplay
+
+# determine file system type for the filesystem you want to expand
+df -hT
+
+# grow the filesystem on the volume you just extended
+#for ext 
+resize2fs /dev/rootvg/home
+
+#for xfs
+xfs_growfs /dev/rootvg/home
+
+# confirm that the filesystem has been resized
+df -h
+

@@ -1,0 +1,8 @@
+pull the changes from a specific commit id to your local branch 
+
+#ref
+https://stackoverflow.com/questions/36778375/git-apply-a-commit-on-another-branch-to-the-working-copy
+
+# have to refresh first with a git pull or git fetch remote
+# -n means don't auto commit 
+git cherry-pick -n <commit id>
