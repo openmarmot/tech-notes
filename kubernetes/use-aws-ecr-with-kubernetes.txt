@@ -1,0 +1,132 @@
+Use AWS ECR on kubernetes clusters 
+
+--notes--
+last update : Oct 2024
+
+
+
+
+-- install awsc cli and configure (on your kubernetes host)--
+# note - this only has to be on the main host I believe. after that it pulls the image locally
+
+# install aws cli
+# - on ubuntu 18.04 the command is
+apt-get install awscli
+# - on fedora 40 server it was 
+dnf install awscli 
+
+# create a  IAM user in AWS IAM (no console access needed for this user)
+# give user AmazonEC2ContainerRegistryFullAccess or other managed policy depending on access level required
+# click user in IAM ->Security Credentials -> create access key
+
+# config aws cli. this is where you put in the secret and access key from IAM
+# make sure you are choosing the region you want your ecr repo in 
+# note this is as root 
+aws configure
+
+
+-- test the aws cli install and permissions --
+
+# get ecr login and pipe to the shell 
+aws ecr get-login-password \
+    --region <region> \
+| docker login \
+    --username AWS \
+    --password-stdin <aws_account_id>.dkr.ecr.<region>.amazonaws.com
+
+#pull an image
+docker pull [image uri from ECR]
+
+
+
+# -- setup a cron -- /home/ec2-user/cron/ecr_login.sh (or whatever your user is)
+# ------------------------------------------------------
+
+# /home/ec2-user/cron/ecr_login.sh
+# no dashes in account #
+ACCOUNT=xxxxxxxxxxxx
+REGION=xx-xxxx-x
+SECRET_NAME=${REGION}-ecr-registry
+EMAIL=email@email.com
+
+TOKEN=`aws ecr --region=$REGION get-authorization-token --output text --query authorizationData[].authorizationToken | base64 -d | cut -d: -f2`
+
+#  Create or replace registry secret
+
+/usr/local/bin/kubectl delete secret --ignore-not-found $SECRET_NAME
+/usr/local/bin/kubectl create secret docker-registry $SECRET_NAME \
+ --docker-server=https://${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com \
+ --docker-username=AWS \
+ --docker-password="${TOKEN}" \
+ --docker-email="${EMAIL}"
+ 
+# ------------------------------------------------------ 
+ 
+ 
+# run it once to make sure it works and gen the secret for the first time
+# lets logout of docker first 
+docker logout https://[account]/ecr/[region].amazonaws.com
+
+# when i attempted to run it i had an error. there was a un-needed line break after
+# query that i had to remove
+
+# if it runs correctly you should get output about a secret being created
+
+# ECR login lasts for 12 hours. lets add a root cron to renew it every 10
+crontab -e
+
+# ecr renew cron 
+0 */10 * * * sh /home/ec2-user/cron/ecr_login.sh &>> /var/log/ecr_login_log.txt
+
+# probably need to touch and chown that log file
+
+-- test deployment and service --
+
+# danitza-deploy.yml
+# make sure to adjust the secret name based on your region and add your image URI
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: danitza-deployment
+  labels:
+    app: danitza
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: danitza
+  template:
+    metadata:
+      labels:
+        app: danitza
+    spec:
+      containers:
+      - name: danitza
+        image: [image uri from ECR]
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: us-west-2-ecr-registry
+        
+#danitza-service.yml
+kind: Service
+apiVersion: v1
+metadata:
+  name: danitza-service
+spec:
+  selector:
+    app: danitza
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30090 
+  type: NodePort
+
+# create the deployment and service
+kubectl create -f danitza-deploy.yml
+kubectl create -f danitza-service.yml
+
+#check
+kubectl get deployments -o wide
+kubectl get services
