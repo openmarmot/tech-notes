@@ -1,0 +1,45 @@
+install mongodb community edition on Fedora 40 Server 
+
+last update : Oct 2024
+
+# ref 
+# https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-red-hat/#std-label-install-mdb-community-redhat-centos
+# https://www.mongodb.com/docs/mongodb-shell/
+
+# !!! Note if this is a VM (in proxmox for example) you need to change the cpu type to host. 
+# the default kvm type causes mongodb to core-dump/crash !!!
+
+# create the yum repo file 
+vi /etc/yum.repos.d/mongodb-org-8.0.repo 
+
+# contents - probably check the ref docs to get the most up to date one 
+# ------------
+[mongodb-org-8.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/9/mongodb-org/8.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://pgp.mongodb.com/server-8.0.asc
+# -----------
+
+# install meta package including the database, shell utility, and tools 
+dnf install -y mongodb-org 
+
+# start and enable with systemd 
+systemctl start mongod
+systemctl status mongod
+systemctl enable mongod
+
+# defaults
+data directory : /var/lib/mongo
+log directory : /var/log/mongodb 
+config file : /etc/mongod.conf
+port : 27017 (only listening on 127.0.0.1 by default)
+
+# default port is 27017. by default it is only listening on localhost
+
+# shell utility (<exit> to exit)
+mongosh
+
+# if you get a openssl error with mongosh you need to swap to a version that uses the system ssl 
+dnf swap mongodb-mongosh mongodb-mongosh-shared-openssl3
