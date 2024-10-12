@@ -1,0 +1,116 @@
+Setting up Fedora 40 Server as a NAT router between two networks
+last update : Oct 2024
+
+Note - this was done on a VM hosted by ProxMox VE
+
+I have a Fedora 40 vm server with the two network interfaces : ens18 and ens19
+ens18
+- proxmox vmbr0
+- has a DHCP address on a network with my wireless router
+
+ens19
+- proxmox vmbr1 (this is a new proxmox linux bridge, no other config, not associated with a device)
+- no other settings
+
+I want ens19 setup as follows 
+- gateway for the 10.1.0.0/24 network
+- DHCP for the 10.1.0.0/24 network
+
+Traffic from 10.1.0.0/24 should be NAT out through ens18
+
+#--------------------------------------------
+
+# -- check initial setup --
+
+# show network devices along with a bunch of info
+nmcli device show
+
+# show the connection info
+nmcli connection show
+
+# you can rename your connections to make the next steps easier.
+# i like the connection names to match the device names
+sudo nmcli connection modify [old-connection-name] connection.id [new-connection-name]
+
+# --- configure ens19 with a static ip ---
+sudo nmcli connection modify ens19 ipv4.addresses 10.1.0.1/24 ipv4.method manual autoconnect yes
+sudo nmcli connection up ens19
+
+# -- install and setup DHCP server --
+
+# install
+sudo dnf install -y dhcp-server
+
+# edit DHCP config
+sudo nano /etc/dhcp/dhcpd.conf
+# ----
+# DHCP Server Configuration
+
+default-lease-time 600;
+max-lease-time 7200;
+authoritative;
+
+subnet 10.1.0.0 netmask 255.255.255.0 {
+    range 10.1.0.10 10.1.0.100;
+    option routers 10.1.0.1;
+    option subnet-mask 255.255.255.0;
+    option domain-name-servers 8.8.8.8, 8.8.4.4;
+}
+# ----
+
+# start, check, enable service
+sudo systemctl start dhcpd
+sudo systemctl status dhcpd
+sudo systemctl enable dhcpd
+
+# -- enable ip forwarding --
+
+# edit the sysctl file
+sudo nano /etc/sysctl.conf
+# ----
+net.ipv4.ip_forward = 1
+# ----
+
+# apply changes
+sudo sysctl -p
+
+# check - this should return net.ipv4.ip_forward = 1
+sudo sysctl net.ipv4.ip_forward
+
+# -- configure NAT and firewalld --
+
+# assign interfaces to zones 
+sudo firewall-cmd --zone=external --add-interface=ens18 --permanent
+sudo firewall-cmd --zone=internal --add-interface=ens19 --permanent
+
+# enable masquerading on external zones
+sudo firewall-cmd --zone=external --add-masquerade --permanent
+
+# allow forwarding from internal to external
+sudo firewall-cmd --permanent --new-policy internal-external
+sudo firewall-cmd --permanent --policy internal-external --add-ingress-zone internal
+sudo firewall-cmd --permanent --policy internal-external --add-egress-zone external
+sudo firewall-cmd --permanent --policy internal--external --set-target ACCEPT
+
+# allow DHCP traffic on ens19
+sudo firewall-cmd --zone=internal --add-service=dhcp --permanent
+
+# reload firewalld
+sudo firewall-cmd --reload
+
+# -- testing --
+Create a new VM, add a network device on vmbr1.
+It should get DHCP and NAT to the internet
+
+# -- performance monitoring --
+
+# iftop is a good one for incoming/outgoing connection data
+sudo dnf install iftop -y
+sudo iftop -i ens19
+
+#nload is good for overall stats for each interface and has a graph
+sudo dnf install nload -y
+sudo nload 
+# use arrows to move between interfaces
+
+

@@ -74,7 +74,7 @@ kubectl get pods -n kube-system
 kubectl exec POD-NAMEt -- sh -c "echo local-path-test > /data/test"
 
 # open a shell in a pod
-kubectl exec --stdin --tty POD_NAME -- /bin/bash
+kubectl exec -it POD_NAME -- /bin/bash
 
 
 # list the containers being used by the pods

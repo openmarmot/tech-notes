@@ -1,0 +1,7 @@
+eks links
+
+# user guide 
+https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html
+
+# deploy sample application 
+https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html
