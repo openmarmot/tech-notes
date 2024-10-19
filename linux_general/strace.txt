@@ -1,0 +1,15 @@
+strace - trace system calls and signals
+
+last update Oct 2024
+
+# install (Fedora 40)
+sudo dnf install -y strace 
+
+# examine a running process
+# top is a easy way to get the PID (process id)
+# pgrep <process name> is another good option 
+strace -p <PID>
+
+# get a summary of calls with a $ of timme spent on each one 
+strace -c <command>
+
