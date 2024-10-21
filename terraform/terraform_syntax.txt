@@ -1,0 +1,22 @@
+
+Syntax reference:
+- Single line comments start with #.
+- Multi-line comments are wrapped with /* and */.
+- Values are assigned with the syntax of key = value.
+- Strings are in double-quotes.
+- Strings can interpolate other values using syntax wrapped in ${}, for example ${var.foo}.
+- Numbers are assumed to be base 10.
+- Boolean values: true, false
+- Lists of primitive types can be made with square brackets ([]), for example ["foo", "bar", "baz"].
+- Maps can be made with braces ({}) and colons (:), for example { "foo": "bar", "bar": "baz" }.
+
+
+------ Formatting -----
+
+terraform fmt [options] [DIR]
+
+-list=false - Don't list the files containing formatting inconsistencies.
+-write=false - Don't overwrite the input files. (This is implied by -check or when the input is STDIN.)
+-diff - Display diffs of formatting changes
+-check - Check if the input is formatted. Exit status will be 0 if all input is properly formatted and non-zero otherwise.
+-recursive - Also process files in subdirectories. By default, only the given directory (or current directory) is processed.

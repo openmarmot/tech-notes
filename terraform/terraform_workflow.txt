@@ -1,0 +1,50 @@
+terraform workflow
+
+-- notes --
+last update : oct 2024
+
+
+-- install terraform --
+
+https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
+
+-- initialize terraform --
+
+# create working dir 
+mkdir -p terraform/test
+cd terraform/test
+
+#Initialize Terraform in the working dir
+terraform init
+
+
+-- normal workflow --
+
+#edit terraform plan file
+vi main.tf
+
+# if you've added any new resources you may have to terraform init to pull/update plugins
+terraform init
+
+# validate that the syntax and everything is correct
+terraform validate
+
+#create the plan (describes what you will change / use to check your changes against what is existing)
+terraform plan
+
+# apply the plan
+terraform apply
+
+# optionally refresh the state against the real thing if other changes have been made
+terraform refresh
+
+# check to see if any other changes are needed. some changes may require multiple apply steps
+terraform plan
+
+# inspect the current deployed terraform resources
+terraform show
+
+# destroy everythign you built (if you want to)
+terraform destroy
+
+
