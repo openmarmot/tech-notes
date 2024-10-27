@@ -59,6 +59,9 @@ TOKEN=`aws ecr --region=$REGION get-authorization-token --output text --query au
  --docker-username=AWS \
  --docker-password="${TOKEN}" \
  --docker-email="${EMAIL}"
+
+ # copy it into the other namesspaces. replace NAMESPACE with your namespace
+/usr/local/bin/kubectl get secret us-west-2-ecr-registry --namespace=default -oyaml | grep -v '^\s*namespace:\s' | /usr/local/bin/kubectl apply --namespace=NAMESPACE -f -
  
 # ------------------------------------------------------ 
  

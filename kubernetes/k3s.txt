@@ -4,7 +4,10 @@ last update : Oct 2024
 
 k3s is a fantastic trimmed down version of Kubernetes that is super easy to install. 
 
-Just follow the instructions from the github : https://github.com/k3s-io/k3s
+Ref:
+- https://github.com/k3s-io/k3s
+- https://docs.k3s.io/installation/requirements?os=rhel
+
 
 
 # - what i did on a Fedora 40 server --
@@ -17,10 +20,14 @@ sudo dnf install podman podman-docker -y
 systemctl start podman 
 systemctl enable podman
 
-# firewalld stuff 
+# -- firewalld stuff --
 # nodeports for services 
 firewall-cmd --zone=public --add-port=30000-32767/tcp --permanent
 # for communication between servers 
 firewall-cmd --zone=public --add-port=6443/tcp --permanent
+# pods
+firewall-cmd --permanent --zone=trusted --add-source=10.42.0.0/16
+# services
+firewall-cmd --permanent --zone=trusted --add-source=10.43.0.0/16 
 
 firewall-cmd --reload
