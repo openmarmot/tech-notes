@@ -1,0 +1,20 @@
+Public SSM Parameters for Amazon AMIs 
+last update : Oct 2024
+ref : https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-public-parameters-ami.html
+
+# get from the cli 
+aws ssm get-parameters-by-path \
+    --path /aws/service/ami-amazon-linux-latest \
+    --query 'Parameters[].Name'
+
+
+# the most useful ones 
+"/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64"
+"/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+
+
+# how to use in cloudformation parameter section 
+  AmiId:
+    Description: Amazon Linux 2023 AMI ID
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
