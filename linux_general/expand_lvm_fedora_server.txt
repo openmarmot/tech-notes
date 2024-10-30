@@ -1,0 +1,20 @@
+Expand LVM on Fedora Server 
+last update : Oct 2024
+
+For whatever reason Fedora server always just uses like 10% of the disk
+by default with the auto partition setup.
+
+# confirm that you have lvm  and note the associated mount point (probably /)
+lsblk 
+
+# confirm the logical volume name (probably /dev/fedora/root)
+lvdisplay
+
+# extend the logical volume 
+lvextend -l +100%FREE /dev/fedora/root
+
+# comfirm you are running XFS 
+df -hT
+
+# extend the XFS file system on the mount point 
+xfs_growfs /

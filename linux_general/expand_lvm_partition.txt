@@ -35,8 +35,11 @@ vgdisplay
 lvdisplay
 
 # extend the volume you want to extend and recheck 
-# here I am adding 20 Gigabytes to the home logical volume
+# add 20 GB 
 lvextend -L +20G /dev/rootvg/home
+# or just extend to the max 
+lvextend -l +100%FREE /dev/rootvg/home
+
 lvdisplay
 
 # determine file system type for the filesystem you want to expand
