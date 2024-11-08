@@ -10,7 +10,11 @@ https://stackoverflow.com/questions/47369351/kubectl-apply-vs-kubectl-create
 https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/
 
--- syntax --
+# cronjobs 
+https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/
+https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+
+# -- syntax --
 
 kubectl [command] [TYPE] [NAME] [flags]
 
@@ -18,8 +22,10 @@ kubectl delete --all [TYPE] --namespace [NAMESPACE]
 
 kubectl create -f SOMEFILE.yml
 
+create : only creates new - will error if it exists
+apply : will create new or update (overwrite) existing
 
--- component status, cluster wide stuff --
+# -- component status, cluster wide stuff --
 
 kubectl get cs
 kubectl get componentstatuses
@@ -35,14 +41,7 @@ kubectl get all --all-namespaces
 #events
 kubectl get events --all-namespaces
 
--- create vs apply --
-
-create : only creates new - will error if it exists
-
-apply : will create new or update (overwrite) existing
-
-
--- node stuff --
+# -- node stuff --
 
 # get nodes
 kubectl get nodes
@@ -62,7 +61,7 @@ kubectl uncordon NODENAME
 # remove all pods from a node (cmd doesn't finish until its complete)
 kubectl drain NODENAME
 
--- pod stuff --
+# -- pod stuff --
 
 # get pods, pod ip, and what node it is on
 kubectl get pods -o wide
@@ -80,7 +79,7 @@ kubectl exec -it POD_NAME -- /bin/bash
 # list the containers being used by the pods
 kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" | less
 
--- deployment stuff --
+# -- deployment stuff --
 
 # get list of deployments
 kubectl get deployments
@@ -92,16 +91,24 @@ kubectl describe deployments DEPLOYMENT_NAME
 kubectl scale deployment web --replicas=3
 
 
--- service stuff --
+# -- service stuff --
 
 kubectl get svc 
 kubectl get service
 
--- cronjobs --
+# -- cronjobs --
 kubectl get cronjobs
 
+# get and run a cron from a web page 
+kubectl create -f https://k8s.io/examples/application/job/cronjob.yaml
 
--- namespace stuff --
+# cronjob execution shows up as a 'job'
+# get a list of jobs and --watch to keep it updating 
+kubectl get jobs --watch
+
+kubectl delete cronjob {cronjob name}
+
+# -- namespace stuff --
 
 #create
 kubectl create namespace robot-shop
@@ -117,7 +124,7 @@ kubectl logs POD_NAME
 # --max-log-requests needs to be set if there are more than five containers
 kubectl logs --follow -l <label_name>=<label> --max-log-requests 10
 
---- checking resource utilization --
+# --- checking resource utilization --
 
 kubectl top nodes
 kubectl top pods
