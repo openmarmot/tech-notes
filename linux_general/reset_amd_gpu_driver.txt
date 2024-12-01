@@ -1,0 +1,11 @@
+reset amd gpu driver 
+
+last update Nov 2024
+
+
+I'm having AMD GPU issues on Fedora 41 on a Framework laptop. 
+
+running this command causes the GPU to reset and temporarily fixes the issue 
+sudo cat /sys/kernel/debug/dri/1/amdgpu_gpu_recover
+
+# ref : https://gitlab.freedesktop.org/drm/amd/-/issues/3647

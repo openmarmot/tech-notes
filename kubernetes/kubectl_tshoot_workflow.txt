@@ -1,0 +1,16 @@
+Kubectl Troubleshooting Workflow 
+
+last update : Nov 30 2024
+
+Some commands in the order that I found them useful. 
+
+# troubleshooting an issue with a deployment with the namespace messageboard 
+
+# 1. lets get everything in the namespace, and see what is up and what is not 
+kubectl get all --namespace messageboard
+
+# looks like a pod is down. lets describe to get more details 
+kubectl describe pod messageboard-deployment-77cfd9f9db-jfcsg --namespace messageboard
+
+# ok i think i fixed it. lets delete the pod so it is re-created 
+kubectl delete pod messageboard-deployment-77cfd9f9db-jfcsg --namespace messageboard
