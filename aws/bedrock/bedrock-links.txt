@@ -1,0 +1,9 @@
+AWS Bedrock Links 
+
+Bedrock is a unified API for AI model usage on AWS 
+
+Converse is a part of the bedrock api that is designed for inference 
+
+# converse api boto sdk examples 
+https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference-examples.html
+

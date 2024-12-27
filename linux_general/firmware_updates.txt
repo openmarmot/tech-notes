@@ -1,0 +1,21 @@
+Linux Firmware Updates 
+
+Firmware can be update with a package called fwupdmgr
+
+# install debian 
+sudo apt install fwupd 
+
+# install RHEL 
+sudo dnf install fwupd
+
+# list devices 
+fwupdmgr get-devices 
+
+# refresh metadata 
+sudo fwupdmgr refresh
+
+# check for updates 
+sudo fwupdmgr get-updates 
+
+# update 
+sudo fwupdmgr update

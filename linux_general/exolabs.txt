@@ -1,0 +1,31 @@
+notes on trying out exo labs distributed LLM compute
+last update Dec 16 2024
+
+ref : https://github.com/exo-explore/exo
+
+
+# =========== Fedora 41 ===============================
+
+# running on Fedora 41 Server with firewalld stopped 
+systemctl stop firewalld
+systemctl disable firewalld
+
+# pre reqs 
+dnf install gcc clang git python-devel libglvnd-glx.x86_64
+#pip install torch # i think not needed anymore but need to double check 
+
+# install (as root)
+git clone https://github.com/exo-explore/exo.git
+cd exo
+#pip install -e . #  note this errored out 
+source install.sh # this worked better 
+
+# run 
+exo
+
+# chat gui allows you to connect and download a model but when attempting 
+# to chat fails with "no module named llvmlite"
+# attempting to pip install this fails the wheel build 
+
+
+
