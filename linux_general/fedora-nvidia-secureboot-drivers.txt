@@ -1,0 +1,3 @@
+
+# this repo documents the process for setting up Nvidia drivers on Fedora 
+https://github.com/roworu/nvidia-fedora-secureboot

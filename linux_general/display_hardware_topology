@@ -1,0 +1,6 @@
+display hardware topology with the lstopo tool 
+
+# fedora 
+sudo dnf install hwloc 
+
+lstopo 

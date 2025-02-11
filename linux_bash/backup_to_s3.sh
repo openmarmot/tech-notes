@@ -12,6 +12,7 @@ current_date=prefix-$(date +'%Y-%m-%d')
 cd ..
 
 # Zip the folder
+# optionally use 'zip -r -e' to encrypt the zip file
 zip -r "$current_date.zip" "$target_folder"
 
 # copy to s3
