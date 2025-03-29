@@ -1,3 +1,17 @@
+Fedora Nvidia Drivers install with Secureboot 
 
-# this repo documents the process for setting up Nvidia drivers on Fedora 
+1. Follow this process to install the Nvidia drivers
+# note - follow it exactly. If you skip creating the key before installing the drivers 
+# you will get an error about missing nvidia kernel on boot and it won't work 
 https://github.com/roworu/nvidia-fedora-secureboot
+
+
+2. install CUDA local RPM from the NVIDIA site. They have a F41 specific download 
+# note - i did not install the 'drivers' portion. I think what we did in step 1 
+# covers this 
+
+3. use locate to find NVCC - giving the location of the bin with the cuda tools. 
+Then add it to your path 
+echo 'export PATH=$PATH:/usr/local/cuda-12.8/bin' >> ~/.bashrc
+
+4. you will probably want to install nvtop - which is a nice utility for seeing graphics card utilization 
