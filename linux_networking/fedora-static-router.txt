@@ -1,0 +1,138 @@
+Setting up Fedora 41 Server as a static router between two networks 
+last update : Apri 2025
+
+!! Note - this does not 100% work. 
+data can go from the attached 10.x network to the internet and back 
+but i can't ping a host on the 10 network from the 192 network. 
+I think the drop on the external zone is likely applied before the 
+source cmd to allow traffic is seen 
+
+
+VM Host : Proxmox VE 8.3 
+
+# -- proxmox setup --------------
+proxmox host -> system -> network -> create Linux Bridge 
+name : vmbr1 
+all other settings left blank 
+
+click 'apply configuration' to apply
+The new bridge should now be listed as active:yes
+
+# -- Fedora server vm setup -------
+Fedora 41 Server edition
+hardware :
+2 cpu
+2 gb ram 
+net0 : on vmbr0
+net1 : on vmbr1 (this one needs to be added under the hardware page)
+
+software selection 
+- feedora server edition 
+- guest agents 
+
+set the static ip addresses for the interfaces in the fedora install gui for simplicity 
+
+ens18 192.168.1.11/24
+ens19 10.0.0.1/24 (no gateway for this one)
+
+at this point you will want to run my fedora-server-initial-setup ansible to 
+install keys, expand the filesystem, etc 
+
+once the server is up and running, double check the network settings with 
+nmcli 
+
+
+# -- install and setup DHCP server --
+
+# install
+sudo dnf install -y dhcp-server
+
+# edit DHCP config
+sudo vim /etc/dhcp/dhcpd.conf
+# ----
+# DHCP Server Configuration
+
+default-lease-time 600;
+max-lease-time 7200;
+authoritative;
+
+subnet 10.0.0.0 netmask 255.255.255.0 {
+    range 10.0.0.10 10.0.0.100;
+    option routers 10.0.0.1;
+    option subnet-mask 255.255.255.0;
+    option domain-name-servers 8.8.8.8, 8.8.4.4;
+}
+# ----
+
+# start, check, enable service
+sudo systemctl start dhcpd
+sudo systemctl status dhcpd
+sudo systemctl enable dhcpd
+
+
+# -- enable ip forwarding --
+
+# edit the sysctl file
+sudo vim /etc/sysctl.d/99-sysctl.conf
+# ----
+net.ipv4.ip_forward = 1
+# ----
+
+# apply changes
+sudo sysctl -p
+
+# check - this should return net.ipv4.ip_forward = 1
+sudo sysctl net.ipv4.ip_forward
+
+# -- configure firewalld --
+
+# Set zones
+sudo firewall-cmd --zone=external --change-interface=ens18
+sudo firewall-cmd --zone=internal --change-interface=ens19
+
+# Allow forwarding between interfaces
+sudo firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i ens19 -o ens18 -j ACCEPT
+sudo firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i ens18 -o ens19 -j ACCEPT
+
+# Allow specific IPs from ens18 (nic1)
+sudo firewall-cmd --zone=external --add-source=192.168.1.100
+sudo firewall-cmd --zone=external --add-source=192.168.1.101
+
+
+
+# Allow specific services from allowed IPs (this is only to the routers ip)
+#sudo firewall-cmd --zone=external --add-rich-rule='rule family=ipv4 source address=192.168.1.100 service name="ssh" accept'
+#sudo firewall-cmd --zone=external --add-rich-rule='rule family=ipv4 source address=192.168.1.101 service name="ssh" accept'
+
+
+
+sudo firewall-cmd --zone=internal --add-service=dhcp --permanent
+
+# Make changes permanent
+sudo firewall-cmd --runtime-to-permanent
+
+# Drop other incoming traffic from ens18
+sudo firewall-cmd --zone=external --set-target=DROP --permanent
+
+# Allow internal zone traffic unrestricted
+sudo firewall-cmd --zone=internal --set-target=ACCEPT --permanent 
+
+# reload 
+sudo firewall-cmd --reload 
+
+
+# -- testing --
+# check the network config 
+nmcli 
+ip route 
+
+# check firewall config 
+sudo firewall-cmd --list-all --zone=internal
+sudo firewall-cmd --list-all --zone=external
+sudo firewall-cmd --direct --get-all-rules
+
+
+# do a tcp dump while running a ping from a 10.x host 
+sudo tcpdump -i ens18  # Should see request and reply
+sudo tcpdump -i ens19  # Should see request and reply
+

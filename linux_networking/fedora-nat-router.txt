@@ -90,7 +90,7 @@ sudo firewall-cmd --zone=external --add-masquerade --permanent
 sudo firewall-cmd --permanent --new-policy internal-external
 sudo firewall-cmd --permanent --policy internal-external --add-ingress-zone internal
 sudo firewall-cmd --permanent --policy internal-external --add-egress-zone external
-sudo firewall-cmd --permanent --policy internal--external --set-target ACCEPT
+sudo firewall-cmd --permanent --policy internal-external --set-target ACCEPT
 
 # allow DHCP traffic on ens19
 sudo firewall-cmd --zone=internal --add-service=dhcp --permanent
