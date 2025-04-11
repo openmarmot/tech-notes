@@ -1,5 +1,7 @@
 firewalld common commands
 
+ref : https://firewalld.org/documentation/man-pages/firewall-cmd
+
 --commands---
 
 # get all the details

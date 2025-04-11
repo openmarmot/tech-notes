@@ -1,11 +1,15 @@
 Setting up Fedora 41 Server as a static router between two networks 
-last update : Apri 2025
+last update : April 2025
 
-!! Note - this does not 100% work. 
-data can go from the attached 10.x network to the internet and back 
-but i can't ping a host on the 10 network from the 192 network. 
-I think the drop on the external zone is likely applied before the 
-source cmd to allow traffic is seen 
+I created this to be a edge router for a proxmox host. Basically you set this up 
+with 192.168.1.0/24 being the network proxmox is attached to and 10.0.0.0/24 being a 
+internal network for proxmox, and this router bridges the two and servers dhcp for 10.0.0.0/24
+
+The only other thing you need to make this work is a static route on your main router pointing 
+10.0.0.0/24 through 10.0.0.1 (or whatever ip you set on this virtual router)
+
+The advantage of this is all the traffic from the proxmox VMs stays contained and you 
+now have a edge where you can filter access.
 
 
 VM Host : Proxmox VE 8.3 
@@ -52,6 +56,7 @@ sudo vim /etc/dhcp/dhcpd.conf
 # ----
 # DHCP Server Configuration
 
+
 default-lease-time 600;
 max-lease-time 7200;
 authoritative;
@@ -66,9 +71,7 @@ subnet 10.0.0.0 netmask 255.255.255.0 {
 
 # start, check, enable service
 sudo systemctl start dhcpd
-sudo systemctl status dhcpd
 sudo systemctl enable dhcpd
-
 
 # -- enable ip forwarding --
 
@@ -86,36 +89,25 @@ sudo sysctl net.ipv4.ip_forward
 
 # -- configure firewalld --
 
-# Set zones
-sudo firewall-cmd --zone=external --change-interface=ens18
-sudo firewall-cmd --zone=internal --change-interface=ens19
+# list all zone data 
+firewall-cmd --list-all-zones
 
-# Allow forwarding between interfaces
-sudo firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i ens19 -o ens18 -j ACCEPT
-sudo firewall-cmd --direct --add-rule ipv4 filter FORWARD 0 -i ens18 -o ens19 -j ACCEPT
-
-# Allow specific IPs from ens18 (nic1)
-sudo firewall-cmd --zone=external --add-source=192.168.1.100
-sudo firewall-cmd --zone=external --add-source=192.168.1.101
-
-
-
-# Allow specific services from allowed IPs (this is only to the routers ip)
-#sudo firewall-cmd --zone=external --add-rich-rule='rule family=ipv4 source address=192.168.1.100 service name="ssh" accept'
-#sudo firewall-cmd --zone=external --add-rich-rule='rule family=ipv4 source address=192.168.1.101 service name="ssh" accept'
-
-
-
-sudo firewall-cmd --zone=internal --add-service=dhcp --permanent
-
-# Make changes permanent
-sudo firewall-cmd --runtime-to-permanent
+# assign interfaces to zones 
+sudo firewall-cmd --permanent --zone=external --change-interface=ens18
+sudo firewall-cmd --permanent --zone=internal --change-interface=ens19
 
 # Drop other incoming traffic from ens18
-sudo firewall-cmd --zone=external --set-target=DROP --permanent
+sudo firewall-cmd --permanent --zone=external --set-target=DROP 
 
 # Allow internal zone traffic unrestricted
-sudo firewall-cmd --zone=internal --set-target=ACCEPT --permanent 
+sudo firewall-cmd --permanent --zone=internal --set-target=ACCEPT
+
+# allow traffic from specific ips in
+# note that the trusted zone has a default accept rule 
+sudo firewall-cmd --permanent --zone=trusted --add-source=192.168.1.200
+
+# set the default zones to external to deactivate the default fedora one 
+firewall-cmd --set-default-zone=external
 
 # reload 
 sudo firewall-cmd --reload 
