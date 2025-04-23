@@ -1,0 +1,6 @@
+Upgrade to a new release version on Fedora 
+
+# for whatever reason upgrading to a new release from software center rarely works for me. 
+
+sudo dnf system-upgrade download --releasever=42
+sudo dnf system-upgrade reboot

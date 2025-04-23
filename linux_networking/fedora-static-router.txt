@@ -109,6 +109,8 @@ sudo firewall-cmd --permanent --zone=trusted --add-source=192.168.1.200
 # set the default zones to external to deactivate the default fedora one 
 firewall-cmd --set-default-zone=external
 
+# note - forwarding between zones seems to 'just work' 
+
 # reload 
 sudo firewall-cmd --reload 
 
