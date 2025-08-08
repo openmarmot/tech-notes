@@ -1,4 +1,4 @@
-# ecr_secret_cron
+# ecr_secret_cron for kubernetes
 ACCOUNT="$(aws sts get-caller-identity --query Account --output text)"
 REGION=xx-xxxx-x # update this with your region !
 SECRET_NAME=${REGION}-ecr-registry

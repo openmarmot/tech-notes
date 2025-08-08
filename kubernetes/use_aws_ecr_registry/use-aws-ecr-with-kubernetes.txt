@@ -1,7 +1,7 @@
 Use AWS ECR on kubernetes clusters 
 
---notes--
-last update : Oct 2024
+! note - as of 2025 I've moved most work on this to ansible. 
+see here : https://github.com/openmarmot/ansible-stuff/blob/main/fedora-k3s-with-aws-ecr.yml
 
 
 

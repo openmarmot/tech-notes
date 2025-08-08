@@ -110,8 +110,14 @@ kubectl delete cronjob {cronjob name}
 
 # -- namespace stuff --
 
+# list all namespaces 
+kubectl get namespaces
+
 #create
 kubectl create namespace robot-shop
+
+# delete the namespace and everything in it 
+kubectl delete namespace robot-shop
 
 # now you can refer to the namespace with -n NAMESPACE
 # or --namespace NAMESPACE

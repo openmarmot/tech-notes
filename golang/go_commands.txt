@@ -1,0 +1,56 @@
+Go Commands
+
+
+
+-- module init --
+# this creates go.mod file and is done in a folder where the module code will be 
+# theoretically the path given should be internet reachable so it can be downloaded from
+# in this case we run this in the 'greetings' folder and assume that example.com/greetings/filename*
+# is a valid download path
+# the go.mod file tracks the module dependencies. this file is maintained by go, not manually
+
+go mod init example.com/greetings
+
+
+# if you need a module to draw from local instead you can redirect it
+
+
+-- update the mod file --
+# adds the dependencies the code needs that are not yet in .mod file
+go mod tidy
+
+
+
+-- run your code --
+
+# use this command in the folder with the .go file that has the main package
+go run .
+
+
+-- tests --
+# ending a file name with *_test.go tells the go test command the file contains
+# test functions
+
+# -v for verbose
+# run in a folder with *_test.go files
+go test -v
+
+
+-- compile and build --
+
+# this should be run from the folder with the .go file that has the main package
+go build
+
+# this creates a executable file in the same directory which can be run with ./FILE
+
+# if the go install dir is on your system path you can install the package so you can run it 
+# anywhere by just using its name
+go install
+
+ -- useful notes --
+ 
+ code executed as an application must be in a main package.
+ 
+ # function naming
+ function names with upper case - exported and used outside of the package
+ function names with lower case - internal use only 

@@ -1,0 +1,4 @@
+Install golang 
+
+# on fedora 
+sudo dnf install golang -y

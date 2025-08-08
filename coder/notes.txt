@@ -1,0 +1,25 @@
+Coder Notes 
+
+github : https://github.com/coder/coder
+docs : https://coder.com/docs
+
+
+# -- quickstart install notes ---
+quickstart local install : https://coder.com/docs/tutorials/quickstart
+
+this is meant to be run on a laptop 
+
+worked fine on Fedora 24 with the following prereqs 
+
+# setup docker 
+dnf install docker -y 
+chmod 777 /var/run/docker.sock
+systemctl enable docker 
+systemctl start docker
+
+
+
+
+# -- kubernetes install --
+kubernetes install : https://coder.com/docs/install/kubernetes
+
