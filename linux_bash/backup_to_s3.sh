@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# repo : https://github.com/openmarmot/tech-notes/tree/main/linux_bash
+# notes : backs up a folder to s3
+
 set -e
 
 s3_bucket=bucket_name
