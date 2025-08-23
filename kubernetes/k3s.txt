@@ -1,33 +1,7 @@
 K3s
 
-last update : Oct 2024
+see fedora-k3s-with-aws-ecr.yml in the ansible-stuff repo for the most up to date install 
 
-k3s is a fantastic trimmed down version of Kubernetes that is super easy to install. 
-
-Ref:
-- https://github.com/k3s-io/k3s
-- https://docs.k3s.io/installation/requirements?os=rhel
-
-
-
-# - what i did on a Fedora 40 server --
-
-# k3s install 
-sudo hostnamectl set-hostname k3s-standalone
-
-# podman install. podman docker aliases the docker commands to podman  
-sudo dnf install podman podman-docker -y
-systemctl start podman 
-systemctl enable podman
-
-# -- firewalld stuff --
-# nodeports for services 
-firewall-cmd --zone=public --add-port=30000-32767/tcp --permanent
-# for communication between servers 
-firewall-cmd --zone=public --add-port=6443/tcp --permanent
-# pods
-firewall-cmd --permanent --zone=trusted --add-source=10.42.0.0/16
-# services
-firewall-cmd --permanent --zone=trusted --add-source=10.43.0.0/16 
-
-firewall-cmd --reload
+to setup kubectl on another computer : 
+copy the contents of this file from the server : /etc/rancher/k3s/k3s.yaml
+put it in ~/.kube/config file on the computer where you have installed kubectl

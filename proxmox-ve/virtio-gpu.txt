@@ -9,7 +9,7 @@ virtio with 128 mb of ram seems to work well.
 client side
 - needs a spice viewer
 -- fedora : remote viewer from the app store
--- windows : virt viewer client : https://virt-manager.org/download/
+-- windows : virt viewer client : https://virt-manager.org/
 
 once you have the spice viewer, click on the vm, it downloads a .vv file. open 
 that and it jumps into the viewer

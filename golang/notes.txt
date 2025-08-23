@@ -1,0 +1,6 @@
+Misc notes on unique things about go 
+
+
+# package main 
+'main' is a unique package name that tells go that the func main is the entrypoint of 
+your application. 
