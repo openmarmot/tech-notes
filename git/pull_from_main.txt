@@ -1,0 +1,5 @@
+If you need to get your branch up to date with main and think it should be fairly straightforward you 
+can try a one time pull from main with a merge commit 
+
+# from your branch 
+git pull --no-rebase origin main

@@ -1,0 +1,3 @@
+simple script to generate SSM secure strings from OS parameters.
+
+this is useful to run from gitlab/github pipelines where OS parameters are injected as CI/CD variables 

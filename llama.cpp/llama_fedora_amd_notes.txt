@@ -1,0 +1,4 @@
+this looks useful 
+https://github.com/ggml-org/llama.cpp/discussions/9981
+
+note i got the curl error doing the cuda install as well. fixed by dnf install libcurl-devel 
