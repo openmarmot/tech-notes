@@ -1,0 +1,34 @@
+setup llama.cpp on Nvidia DGX Spark and run GPT OSS 120 
+
+# ref 
+https://github.com/ggml-org/llama.cpp/discussions/16514
+https://github.com/ggml-org/llama.cpp/discussions/16578
+https://github.com/ggml-org/llama.cpp/discussions/15396
+
+
+# - prereqs -
+# you need this library on ubuntu or cmake will complain about not finding curl 
+sudo apt install libcurl4-openssl-dev
+
+# - install - 
+git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp
+cmake -B build-cuda -DGGML_CUDA=ON
+cmake --build build-cuda -j
+
+# - run - 
+cd build-cuda/bin 
+./llama-server -hf ggml-org/gpt-oss-120b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048 --host 0.0.0.0
+
+# - other notes - 
+- it seems there isn't a firewall setup on the spark by default. this was likely done to simply use. 
+i think this is fine for local usage. 
+
+- its a little hard to judge memory usage, i suspect due to the unified memory. I didn't find the nvidia 
+dashboard tool useful, but free -h from linux is reporting 73GB used while running gpt-oss-120. 
+there is a massive 45GB cache - this seems unusual. I'm not sure if llama.cpp is using this or if there 
+is another explanation. If it is being used, then perhaps all memory is in 'use' 
+
+- I tried a couple different prompts including analyzing a python file and was getting a pretty steady 
+41 tokens/second 
+

@@ -1,0 +1,7 @@
+DGX Spark Web Links 
+
+# simons review has lots of good links and info in it 
+https://simonwillison.net/2025/Oct/14/nvidia-dgx-spark/
+
+# follow up from Simon on getting a deepseek model running on the spark 
+https://simonwillison.net/2025/Oct/20/deepseek-ocr-claude-code/
