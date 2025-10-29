@@ -1,0 +1,5 @@
+if you get errors stating that pytorch wasn't compiled with cuda, you need a newer pytorch.
+sometime pytorch is a dependency and you have to install this before your requirements in a venv to get it to worked
+
+this worked for me 
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130

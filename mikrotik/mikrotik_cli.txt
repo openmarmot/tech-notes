@@ -1,0 +1,6 @@
+Mikrotik CLI commands I found useful
+
+# ----------------------------------
+
+# print out the current firewall rules
+/ip firewall filter print
