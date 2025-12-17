@@ -1,8 +1,13 @@
 setup llama.cpp on Nvidia DGX Spark and run GPT OSS 120 
 
 # ref 
+# guide setting up Spark with ggml 
 https://github.com/ggml-org/llama.cpp/discussions/16514
+
+# performance of llama.cpp on Spark 
 https://github.com/ggml-org/llama.cpp/discussions/16578
+
+# general guide on running gpt-oss with llama.cpp
 https://github.com/ggml-org/llama.cpp/discussions/15396
 
 

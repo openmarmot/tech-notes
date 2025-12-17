@@ -1,0 +1,4 @@
+I found that some older models that previously worked fine now ignore the prompt and just talk about the video game tekken. 
+this seems to be due to some sort of mistral based preprocessor. 
+
+adding "--chat-template chatml" to the server command fixed it 
