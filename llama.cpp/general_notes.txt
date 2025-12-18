@@ -1,0 +1,5 @@
+llama.cpp general notes 
+
+# guide to llama.cpp server flags 
+https://github.com/ggml-org/llama.cpp/tree/master/tools/server
+

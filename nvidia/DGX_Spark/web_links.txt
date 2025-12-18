@@ -11,3 +11,7 @@ https://simonwillison.net/2025/Oct/20/deepseek-ocr-claude-code/
 # nanochat on the dgx spark 
 https://github.com/jasonacox/dgx-spark/tree/main/nanochat
 https://github.com/karpathy/nanochat/discussions/28
+
+# Nvidia github for DGX Spark examples 
+https://github.com/NVIDIA/dgx-spark-playbooks/tree/main
+

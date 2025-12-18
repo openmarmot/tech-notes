@@ -1,0 +1,9 @@
+llama.cpp specific model links 
+
+
+# -- Nvidia Nemotron Unsloth version -- 
+https://docs.unsloth.ai/models/nemotron-3
+
+# details from nvidia on running via the spark 
+https://github.com/NVIDIA/dgx-spark-playbooks/tree/main/nvidia/nemotron
+
