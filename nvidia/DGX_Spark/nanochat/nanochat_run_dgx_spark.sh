@@ -11,6 +11,7 @@ fi
 
 # -----------------------------------------------------------------------------
 # Install dependencies and init work
+# adapted from https://github.com/karpathy/nanochat/discussions/225
 read -r -p "Installing dependencies. Press Enter to continue... "
 pip install -e .
 pip install maturin 
@@ -21,6 +22,8 @@ pushd rustbpe
     maturin build --release
     pip install target/wheels/rustbpe*.whl --force-reinstall
 popd
+
+# NOTE - after this it is a pretty standard speed run.
 
 # -----------------------------------------------------------------------------
 # Tokenizer
