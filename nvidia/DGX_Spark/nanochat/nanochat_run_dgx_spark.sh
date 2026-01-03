@@ -1,3 +1,5 @@
+# see here for full notes and ref/sources/credits : https://github.com/openmarmot/tech-notes/tree/main/nvidia/DGX_Spark/nanochat
+
 set -e
 
 export OMP_NUM_THREADS=1
