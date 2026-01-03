@@ -1,0 +1,4 @@
+# warning in pretrain 
+[rank0]:W0103 19:17:57.221000 6239 torch/_inductor/utils.py:1545] [0/0] Not enough SMs to use max_autotune_gemm mode
+
+

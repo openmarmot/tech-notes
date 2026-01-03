@@ -12,6 +12,9 @@ https://simonwillison.net/2025/Oct/20/deepseek-ocr-claude-code/
 https://github.com/jasonacox/dgx-spark/tree/main/nanochat
 https://github.com/karpathy/nanochat/discussions/28
 
+# dual node nanochat 
+https://gist.github.com/emaadmanzoor/d245c0c0ce90b25b4d50c0ffc448f876
+
 # Nvidia github for DGX Spark examples 
 https://github.com/NVIDIA/dgx-spark-playbooks/tree/main
 

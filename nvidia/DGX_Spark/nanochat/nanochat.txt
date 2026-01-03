@@ -1,0 +1,96 @@
+Nanochat on DGX Spark 
+
+# -- references and sources --
+
+# nanochat repo 
+https://github.com/karpathy/nanochat
+
+# nanochat intro / discussion 
+https://github.com/karpathy/nanochat/discussions/1
+
+# nanochat on dgx spark github discussion 
+https://github.com/karpathy/nanochat/discussions/28
+
+# nanochat on 2 sparks gist from emaadmanzoor
+https://gist.github.com/emaadmanzoor/d245c0c0ce90b25b4d50c0ffc448f876
+
+# optimized setup for nanochat on spark 
+https://github.com/jasonacox/dgx-spark/tree/main/nanochat
+
+# uv-less installation 
+https://github.com/karpathy/nanochat/discussions/225
+
+
+# -- docker commands -- 
+
+# list containers 
+docker ps -a
+
+# stop a running container 
+docker stop container-name
+
+# start and attach interactively to a container 
+docker start -ai container-name 
+
+# force stop and remove a container 
+docker rm -f container-name 
+
+# remove ALL stopped containers 
+docker container prune
+
+# -- tmux commands --
+# list sessions 
+tmux ls 
+
+# create a new named session 
+tmux new -s nanochat
+
+# detach 
+control b + d 
+
+# reattach 
+tmux attach -t nanochat
+
+# -- prereqs --
+
+# fix docker permissions for your user if you haven't already 
+sudo usermod -aG docker $USER
+newgrp docker
+
+# -- docker setup --
+
+# create a folder for this work and enter it 
+mkdir nanochat-docker
+cd nanochat-docker
+
+# run docker, this will also pull the container 
+# we are naming the container 'nanochat'
+docker run --gpus all -it --ipc=host \
+  -v $HOME/.cache/nanochat:/root/.cache/nanochat \
+  -v ${PWD}:/workspace -w /workspace \
+  --name nanochat \
+  nvcr.io/nvidia/pytorch:25.09-py3
+
+# check nvidia functionality 
+nvidia-smi 
+
+# get nanochat 
+git clone https://github.com/karpathy/nanochat.git
+
+# optionaly install opencode for troubleshooting 
+curl -fsSL https://opencode.ai/install | bash
+
+# -- start run -- 
+# enter the nanochat repo 
+cd nanochat 
+
+# create shell script and paste in contents 
+vim nanochat_run_dgx_spark.sh 
+
+# set permissions 
+chmod +x nanochat_run_dgx_spark.sh
+
+# run 
+./nanochat_run_dgx_spark.sh 
+
+
