@@ -45,7 +45,7 @@ tmux ls
 # create a new named session 
 tmux new -s nanochat
 
-# detach 
+# detach (or just close the terminal window)
 control b + d 
 
 # reattach 

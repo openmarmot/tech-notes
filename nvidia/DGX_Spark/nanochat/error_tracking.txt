@@ -1,4 +1,7 @@
 # warning in pretrain 
 [rank0]:W0103 19:17:57.221000 6239 torch/_inductor/utils.py:1545] [0/0] Not enough SMs to use max_autotune_gemm mode
 
+# kcompactd0 using 100% of one cpu core on pretrain. this issue is intermittent
+this seems to be a persistent linux bug related to high memory use in virtual machines (also docker??)
+https://bugzilla.redhat.com/show_bug.cgi?id=1694305
 
