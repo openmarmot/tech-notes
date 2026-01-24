@@ -1,0 +1,4 @@
+Opencode Notes 
+
+# start web ui 
+opencode web --port 80 --hostname 0.0.0.0

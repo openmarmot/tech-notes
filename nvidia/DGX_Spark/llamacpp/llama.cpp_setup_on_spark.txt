@@ -15,6 +15,9 @@ https://github.com/ggml-org/llama.cpp/discussions/15396
 # you need this library on ubuntu or cmake will complain about not finding curl 
 sudo apt install libcurl4-openssl-dev
 
+# Jan 2026 update. you also need this now 
+sudo apt-get install libssl-dev
+
 # - install - 
 git clone https://github.com/ggml-org/llama.cpp
 cd llama.cpp
@@ -22,8 +25,7 @@ cmake -B build-cuda -DGGML_CUDA=ON
 cmake --build build-cuda -j
 
 # - run - 
-cd build-cuda/bin 
-./llama-server -hf ggml-org/gpt-oss-120b-GGUF --ctx-size 0 --jinja -ub 2048 -b 2048 --host 0.0.0.0
+use one of the start_*.sh shell scripts in this directory to run a model
 
 # - other notes - 
 - it seems there isn't a firewall setup on the spark by default. this was likely done to simply use. 

@@ -5,3 +5,7 @@
 this seems to be a persistent linux bug related to high memory use in virtual machines (also docker??)
 https://bugzilla.redhat.com/show_bug.cgi?id=1694305
 
+
+at some point after pretrain we got autdetected device type cpu 
+
+
