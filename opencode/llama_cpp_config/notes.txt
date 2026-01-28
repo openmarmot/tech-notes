@@ -1,0 +1,8 @@
+
+# create the folder path and file 
+mkdir -p ~/.config/opencode && vim ~/.config/opencode/opencode.json
+
+note that output can be adjusted. 32k seems to be the opencode default but is 
+pretty crazy large 
+
+make sure to replace the IP with your correct server IP 
