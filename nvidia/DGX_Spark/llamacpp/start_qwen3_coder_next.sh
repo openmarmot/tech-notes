@@ -4,7 +4,7 @@
 # Feb 2026 release
 # https://huggingface.co/Qwen/Qwen3-Coder-Next-GGUF/tree/main
 # https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF
-# https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF
+# https://unsloth.ai/docs/models/qwen3-coder-next
 
 ./llama.cpp/build-cuda/bin/llama-server \
   -hf unsloth/Qwen3-Coder-Next-GGUF:Q8_0 \
