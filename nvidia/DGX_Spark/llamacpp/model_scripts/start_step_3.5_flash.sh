@@ -1,4 +1,6 @@
 
+# note - did not get this working. need to revisit
+
 
 #https://huggingface.co/stepfun-ai/Step-3.5-Flash-Int4
 

@@ -5,14 +5,14 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "llama-server (local)",
       "options": {
-        "baseURL": "http://10.12.0.57:8080/v1"
+        "baseURL": "http://10.12.0.50:8080/v1"
       },
       "models": {
-        "ggml-org/GLM-4.7-Flash-GGUF:Q8_0": {
-          "name": "GLM-4.7-Flash (local)",
+        "unsloth/Qwen3-Coder-Next-GGUF:Q8_0": {
+          "name": "Qwen3-Coder Next (local)",
           "limit": {
-            "context": 202752,
-            "input": 202752,
+            "context": 262144,
+            "input": 262144,
             "output": 32768
           },
           "modalities": {
@@ -27,5 +27,5 @@
       }
     }
   },
-  "model": "llama.cpp/GLM-4.7-Flash"
+  "model": "llama.cpp/Qwen3-Coder Next (local)"
 }
