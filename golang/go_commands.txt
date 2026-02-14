@@ -47,6 +47,9 @@ go build
 # anywhere by just using its name
 go install
 
+-- fix formatting issues --
+gofmt -w /folder/main.go 
+
  -- useful notes --
  
  code executed as an application must be in a main package.

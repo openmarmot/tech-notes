@@ -1,0 +1,8 @@
+llama.cpp setup for claude code 
+
+best way to do this probably is to inject env variables via the system wide managed-settings 
+
+/etc/claude-code/managed-settings.json
+
+do we need this ? 
+ANTHROPIC_API_KEY

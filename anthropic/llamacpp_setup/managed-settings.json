@@ -1,0 +1,9 @@
+{
+  "companyAnnouncements": [
+    "Welcome to the Jungle"
+  ],
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "false",
+    "ANTHROPIC_BASE_URL": "http://10.12.0.50:8080"
+  }
+}
