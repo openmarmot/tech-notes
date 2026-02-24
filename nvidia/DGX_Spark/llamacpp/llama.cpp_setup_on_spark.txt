@@ -31,7 +31,7 @@ cmake --build build-cuda -j
 use one of the start_*.sh shell scripts in this directory to run a model
 
 # - other notes - 
-- it seems there isn't a firewall setup on the spark by default. this was likely done to simply use. 
+- it seems there isn't a firewall setup on the spark by default. this was likely done to simplify use. 
 i think this is fine for local usage. 
 
 - its a little hard to judge memory usage, i suspect due to the unified memory. I didn't find the nvidia 
@@ -39,6 +39,4 @@ dashboard tool useful, but free -h from linux is reporting 73GB used while runni
 there is a massive 45GB cache - this seems unusual. I'm not sure if llama.cpp is using this or if there 
 is another explanation. If it is being used, then perhaps all memory is in 'use' 
 
-- I tried a couple different prompts including analyzing a python file and was getting a pretty steady 
-41 tokens/second 
 
