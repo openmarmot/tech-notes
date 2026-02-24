@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# note - have not tried this yet
-
 # Designed for DGX Spark
 
 # https://unsloth.ai/docs/models/qwen3.5
@@ -13,7 +11,7 @@
 
 
 
-# this is using about 87 GB
+# this is using about 87 GB. starts at about 22 t/s
 HF_MODEL="unsloth/Qwen3.5-122B-A10B-GGUF:UD-Q4_K_XL"
 
 
