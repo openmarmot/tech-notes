@@ -3,3 +3,13 @@ llama.cpp general notes
 # guide to llama.cpp server flags 
 https://github.com/ggml-org/llama.cpp/tree/master/tools/server
 
+# how to use glm-ocr 
+https://github.com/ggml-org/llama.cpp/discussions/19721
+
+# eugr's spark specific docker container for vllm 
+https://github.com/eugr/spark-vllm-docker
+
+# vllm docker for nvfp4 support 
+https://github.com/Avarok-Cybersecurity/dgx-vllm
+
+

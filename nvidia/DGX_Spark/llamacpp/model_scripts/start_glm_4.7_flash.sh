@@ -16,10 +16,10 @@
 # currently running at ~ 42 t/s on DGX Spark 
 
 # this is fantastic, but slows down a lot at higher context
-#HF_MODEL="ggml-org/GLM-4.7-Flash-GGUF:Q8_0"
+HF_MODEL="ggml-org/GLM-4.7-Flash-GGUF:Q8_0"
 
 # MXFP4 is generally highly regarded. faster, but at what cost?
-HF_MODEL="noctrex/GLM-4.7-Flash-MXFP4_MOE-GGUF:MXFP4_MOE"
+#HF_MODEL="noctrex/GLM-4.7-Flash-MXFP4_MOE-GGUF:MXFP4_MOE"
 
 
 # -np 1 
