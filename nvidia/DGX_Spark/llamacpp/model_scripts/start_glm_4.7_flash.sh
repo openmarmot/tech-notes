@@ -37,6 +37,8 @@ HF_MODEL="ggml-org/GLM-4.7-Flash-GGUF:Q8_0"
   --batch-size 4096 \
   --ubatch-size 4096 \
   -np 1 \
+  --no-mmap \
+  --metrics \
   --host 0.0.0.0 \
   --port 8080
 
