@@ -2,8 +2,10 @@
 
 # Designed for DGX Spark
 
+# Note I mostly based this off my parameters for the 122b model
+
 # https://unsloth.ai/docs/models/qwen3.5
-# https://huggingface.co/unsloth/Qwen3.5-122B-A10B-GGUF
+# https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF
 
 # -np 1 
 # disable unified kv cache which otherwise leads to slow downs over time 
@@ -18,12 +20,10 @@
 
 # --------- Models ----------------------
 
-# the Q4 quants seemed to perform better here. 
-# i think unsloth found the same conclusion
-#HF_MODEL="unsloth/Qwen3.5-122B-A10B-GGUF:MXFP4_MOE"
 
-# this is using about 87 GB. starts at about 22 t/s
-HF_MODEL="unsloth/Qwen3.5-122B-A10B-GGUF:UD-Q4_K_XL"
+# used about 40 gb of ram. about 54 t/s. 
+# thinking was ultra fast
+HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q4_K_XL"
 
 #-----------------------------------------
 
