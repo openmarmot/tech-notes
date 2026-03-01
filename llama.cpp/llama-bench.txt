@@ -1,0 +1,6 @@
+last update : March 01 2026
+
+llama-bench doesn't seem to support the -hf flag or multi part models at the moment. 
+instead i can point towards models that are downloaded and in the llama.cpp cache 
+
+./llama.cpp/build-cuda/bin/llama-bench -m /home/andrew/.cache/llama.cpp/unsloth_Qwen3.5-35B-A3B-GGUF_Qwen3.5-35B-A3B-UD-Q4_K_XL.gguf -fa 1 -d 0,4096,8192,16384,32768 -p 2048 -n 32 -ub 2048 -mmp 0

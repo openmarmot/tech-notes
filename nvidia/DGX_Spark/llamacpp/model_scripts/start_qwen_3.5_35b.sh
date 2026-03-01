@@ -23,7 +23,10 @@
 
 # used about 40 gb of ram. about 54 t/s. 
 # thinking was ultra fast
-HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q4_K_XL"
+#HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q4_K_XL"
+
+# about 58 gb of ram. about 39 t/s
+HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q8_K_XL"
 
 #-----------------------------------------
 
