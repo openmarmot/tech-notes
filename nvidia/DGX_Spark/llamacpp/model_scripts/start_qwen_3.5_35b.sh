@@ -6,6 +6,7 @@
 
 # https://unsloth.ai/docs/models/qwen3.5
 # https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF
+# https://huggingface.co/Qwen/Qwen3.5-35B-A3B#best-practices
 
 # -np 1 
 # disable unified kv cache which otherwise leads to slow downs over time 
@@ -25,6 +26,7 @@
 # thinking was ultra fast
 #HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q4_K_XL"
 
+# might as well use this as we have the ram
 # about 58 gb of ram. about 39 t/s
 HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q8_K_XL"
 
