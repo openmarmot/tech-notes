@@ -17,16 +17,14 @@
 
 # --------- Models ----------------------
 
-# slightly too big for one spark. 
-#HF_MODEL="unsloth/grok-2-GGUF:Q2_K_XL"
-
-HF_MODEL="unsloth/grok-2-GGUF:Q2_K_L"
+# uses 115GB of ram with context at 16384
+HF_MODEL="unsloth/grok-2-GGUF:UD-Q2_K_XL"
 
 #-----------------------------------------
 
 ./llama.cpp/build-cuda/bin/llama-server \
   -hf "$HF_MODEL" \
-  --ctx-size 0 \
+  --ctx-size 16384 \
   --temp 1.0 \
   --top-p 0.95 \
   --min-p 0.01 \
