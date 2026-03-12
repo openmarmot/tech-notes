@@ -30,10 +30,10 @@
 # thinking was ultra fast
 #HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q4_K_XL"
 
-# as of march 5th this version got resized and its now 32 t/s
+# bigger and slower. not worth it imo
 #HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q8_K_XL"
 
-
+# about 50 t/s as of march 10 2026
 HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:Q8_0"
 
 #-----------------------------------------
