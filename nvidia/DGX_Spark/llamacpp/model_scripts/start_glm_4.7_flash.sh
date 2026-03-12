@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Designed for DGX Spark + GLM-4.7-Flash
-# https://unsloth.ai/docs/models/glm-4.7-flash
+# Designed for DGX Spark
 
+# https://artificialanalysis.ai/models/glm-4-7-flash
+
+# https://unsloth.ai/docs/models/glm-4.7-flash
 # https://huggingface.co/ggerganov/presets/blob/main/preset.ini
-# https://huggingface.co/noctrex/GLM-4.7-Flash-MXFP4_MOE-GGUF
 
 # model sources 
 # https://huggingface.co/unsloth/GLM-4.7-Flash-GGUF

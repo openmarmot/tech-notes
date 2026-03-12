@@ -27,5 +27,5 @@
       }
     }
   },
-  "model": "llama.cpp/Qwen3.5-35B-A3B"
+  "model": "llama.cpp/unsloth/Qwen3.5-35B-A3B-GGUF:Q8_0"
 }
