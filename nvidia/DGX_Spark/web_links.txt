@@ -1,6 +1,31 @@
 DGX Spark Web Links 
 
+
+# -- Nvidia Links --
+
 https://build.nvidia.com/spark
+
+# Nvidia github for DGX Spark examples 
+https://github.com/NVIDIA/dgx-spark-playbooks/tree/main
+
+# Nvidia DGX Spark forum 
+https://forums.developer.nvidia.com/c/accelerated-computing/dgx-spark-gb10/719
+
+
+# -- vLLM inference related links --
+
+# spark bench marks. mostly vLLM 
+https://spark-arena.com/
+
+# Eugr's spark specific vllm docker container 
+https://github.com/eugr/spark-vllm-docker
+
+# Eugr's spark clustering guide 
+https://github.com/eugr/spark-vllm-docker/blob/main/docs/NETWORKING.md
+
+
+
+# --- older misc links. may be outdated now --
 
 # simons review has lots of good links and info in it 
 https://simonwillison.net/2025/Oct/14/nvidia-dgx-spark/
@@ -15,6 +40,5 @@ https://github.com/karpathy/nanochat/discussions/28
 # dual node nanochat 
 https://gist.github.com/emaadmanzoor/d245c0c0ce90b25b4d50c0ffc448f876
 
-# Nvidia github for DGX Spark examples 
-https://github.com/NVIDIA/dgx-spark-playbooks/tree/main
+
 

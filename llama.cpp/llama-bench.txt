@@ -9,3 +9,5 @@ instead i can point towards models that are downloaded and in the llama.cpp cach
 # new HF style 
 ./llama.cpp/build-cuda/bin/llama-bench -hf unsloth/Qwen3.5-35B-A3B-GGUF:Q8_0 -fa 1 -d 0,4096,8192,16384,32768 -p 2048 -n 32 -ub 2048 -mmp 0
 
+./llama.cpp/build-cuda/bin/llama-bench -hf unsloth/Qwen3.5-122B-A10B-GGUF:Q4_K_M -fa 1 -d 0,4096,8192,16384,32768 -p 2048 -n 32 -ub 2048 -mmp 0
+
