@@ -11,6 +11,12 @@ https://github.com/NVIDIA/dgx-spark-playbooks/tree/main
 # Nvidia DGX Spark forum 
 https://forums.developer.nvidia.com/c/accelerated-computing/dgx-spark-gb10/719
 
+# DGX Spark Field diagnostics 
+https://nvidia.custhelp.com/app/answers/detail/a_id/5767/~/nvidia-dgx-spark-field-diagnostics
+
+# interesting blog post on ai agent workloads on spark clusters 
+https://developer.nvidia.com/blog/scaling-autonomous-ai-agents-and-workloads-with-nvidia-dgx-spark/
+
 
 # -- vLLM inference related links --
 
@@ -22,6 +28,11 @@ https://github.com/eugr/spark-vllm-docker
 
 # Eugr's spark clustering guide 
 https://github.com/eugr/spark-vllm-docker/blob/main/docs/NETWORKING.md
+
+
+# -- misc links --
+
+https://github.com/hoesing/spark-gpu-throttle-check
 
 
 
