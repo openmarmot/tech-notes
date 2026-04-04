@@ -36,6 +36,9 @@
 # about 50 t/s as of march 10 2026
 HF_MODEL="unsloth/Qwen3.5-35B-A3B-GGUF:Q8_0"
 
+# uncensored version
+#HF_MODEL=HauhauCS/Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive:Q8_0"
+
 #-----------------------------------------
 
 ./llama.cpp/build-cuda/bin/llama-server \
