@@ -9,7 +9,7 @@ HF_MODEL="unsloth/MiniMax-M2.7-GGUF:UD-IQ4_XS"
 
 ./llama.cpp/build-cuda/bin/llama-server \
   -hf "$HF_MODEL" \
-  --ctx-size 100000 \
+  --ctx-size 50000 \
   --jinja \
   --temp 1.0 \
   --top-p 0.95 \
