@@ -1,21 +1,25 @@
-vLLM on Spark 
+vLLM on Spark
 
 
 # -- EUGR docker setup ---
 
-This is a spark specific repo for vLLM 
+This is a spark specific repo for vLLM
 
-Setup 
+Setup
 
-1. optionally follow the networking guide to connect your spark cluster 
+1. optionally follow the networking guide to connect your spark cluster
 https://github.com/eugr/spark-vllm-docker/blob/main/docs/NETWORKING.md
 
-2. review recipes 
+2. review recipes
 https://github.com/eugr/spark-vllm-docker/tree/main/recipes
 
-3. optionally setup/discover cluster 
+3. optionally setup/discover cluster
 ./run-recipe.sh --discover
 ./run-recipe.sh --show-env
 
 4. run a recipe (auto download and setup)
 ./run-recipe.sh qwen3.5-122b-fp8 --setup
+
+# -- Benchmarks --
+# benchmark with llama-benchy
+uvx llama-benchy --base-url http://10.12.0.50:8000/v1 --model Qwen/Qwen3.5-122B-A10B-FP8 --depth 0 4096 8192 16384 32768 --concurrency 1
