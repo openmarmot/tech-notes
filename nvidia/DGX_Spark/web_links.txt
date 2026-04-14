@@ -1,33 +1,39 @@
-DGX Spark Web Links 
+DGX Spark Web Links
 
 
 # -- Nvidia Links --
 
 https://build.nvidia.com/spark
 
-# Nvidia github for DGX Spark examples 
+# Nvidia github for DGX Spark examples
 https://github.com/NVIDIA/dgx-spark-playbooks/tree/main
 
-# Nvidia DGX Spark forum 
+# Nvidia DGX Spark forum
 https://forums.developer.nvidia.com/c/accelerated-computing/dgx-spark-gb10/719
 
-# DGX Spark Field diagnostics 
+# DGX Spark Field diagnostics
 https://nvidia.custhelp.com/app/answers/detail/a_id/5767/~/nvidia-dgx-spark-field-diagnostics
 
-# interesting blog post on ai agent workloads on spark clusters 
+# interesting blog post on ai agent workloads on spark clusters
 https://developer.nvidia.com/blog/scaling-autonomous-ai-agents-and-workloads-with-nvidia-dgx-spark/
 
 
 # -- vLLM inference related links --
 
-# spark bench marks. mostly vLLM 
+# spark bench marks. mostly vLLM
 https://spark-arena.com/
 
-# Eugr's spark specific vllm docker container 
+# Eugr's spark specific vllm docker container
 https://github.com/eugr/spark-vllm-docker
 
-# Eugr's spark clustering guide 
+# Eugr's spark clustering guide
 https://github.com/eugr/spark-vllm-docker/blob/main/docs/NETWORKING.md
+
+# -- UnSloth --
+# unsloth ui with llama.cpp backend
+https://unsloth.ai/docs/new/studio
+
+
 
 
 # -- misc links --
@@ -38,18 +44,15 @@ https://github.com/hoesing/spark-gpu-throttle-check
 
 # --- older misc links. may be outdated now --
 
-# simons review has lots of good links and info in it 
+# simons review has lots of good links and info in it
 https://simonwillison.net/2025/Oct/14/nvidia-dgx-spark/
 
-# follow up from Simon on getting a deepseek model running on the spark 
+# follow up from Simon on getting a deepseek model running on the spark
 https://simonwillison.net/2025/Oct/20/deepseek-ocr-claude-code/
 
-# nanochat on the dgx spark 
+# nanochat on the dgx spark
 https://github.com/jasonacox/dgx-spark/tree/main/nanochat
 https://github.com/karpathy/nanochat/discussions/28
 
-# dual node nanochat 
+# dual node nanochat
 https://gist.github.com/emaadmanzoor/d245c0c0ce90b25b4d50c0ffc448f876
-
-
-
