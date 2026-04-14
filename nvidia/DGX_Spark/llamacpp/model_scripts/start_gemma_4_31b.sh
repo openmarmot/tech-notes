@@ -2,7 +2,7 @@
 
 # Designed for DGX Spark
 
-# https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF
+# https://huggingface.co/unsloth/gemma-4-31B-it-GGUF
 # https://unsloth.ai/docs/models/gemma-4
 
 # -np 1
@@ -17,8 +17,8 @@
 
 
 
-# ~ 40 t/s. ram usage is low, maybe 20GB
-HF_MODEL="unsloth/gemma-4-E4B-it-GGUF:Q8_0"
+#
+HF_MODEL="unsloth/gemma-4-31B-it-GGUF:UD-Q4_K_XL"
 
 #-----------------------------------------
 
