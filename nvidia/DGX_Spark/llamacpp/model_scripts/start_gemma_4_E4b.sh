@@ -20,9 +20,6 @@
 #
 HF_MODEL="unsloth/gemma-4-E4B-it-GGUF:Q8_0"
 
-# uncensored version
-#HF_MODEL=HauhauCS/Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive:Q8_0"
-
 #-----------------------------------------
 
 ./llama.cpp/build-cuda/bin/llama-server \
