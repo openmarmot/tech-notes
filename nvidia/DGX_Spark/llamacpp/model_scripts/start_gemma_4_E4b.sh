@@ -2,6 +2,10 @@
 
 # Designed for DGX Spark
 
+# note it probably makes more sense to run the gemma 4 26b MOE on the spark.
+# however for large batches of small tasks the abbreviated thinking of this model
+# may prove useful
+
 # https://huggingface.co/unsloth/gemma-4-E4B-it-GGUF
 # https://unsloth.ai/docs/models/gemma-4
 
