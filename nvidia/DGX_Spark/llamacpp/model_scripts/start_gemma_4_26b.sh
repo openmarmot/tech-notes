@@ -2,7 +2,7 @@
 
 # Designed for DGX Spark
 
-# https://huggingface.co/unsloth/gemma-4-31B-it-GGUF
+# https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF
 # https://unsloth.ai/docs/models/gemma-4
 
 # -np 1
@@ -18,7 +18,7 @@
 
 
 #
-HF_MODEL="unsloth/gemma-4-31B-it-GGUF:UD-Q4_K_XL"
+HF_MODEL="unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_XL"
 
 #-----------------------------------------
 
