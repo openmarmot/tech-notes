@@ -1,0 +1,8 @@
+setup disk encryption on the DGX Spark
+
+https://docs.nvidia.com/dgx/dgx-spark-uefi/security-tab.html#tcg-storage-security-configuration
+
+
+1. use the 'Esc' key to enter the UEFI menu after rebooting
+2. Security Tab -> TCG Storage Security Configuration -> select your ssd -> set Admin password
+3. save and exit UEFI menu

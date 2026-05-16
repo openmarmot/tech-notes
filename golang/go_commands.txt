@@ -3,7 +3,7 @@ Go Commands
 
 
 -- module init --
-# this creates go.mod file and is done in a folder where the module code will be 
+# this creates go.mod file and is done in a folder where the module code will be
 # theoretically the path given should be internet reachable so it can be downloaded from
 # in this case we run this in the 'greetings' folder and assume that example.com/greetings/filename*
 # is a valid download path
@@ -16,6 +16,9 @@ go mod init example.com/greetings
 
 
 -- update the mod file --
+
+# optionally update all dependencies to their latest minor versions
+
 # adds the dependencies the code needs that are not yet in .mod file
 go mod tidy
 
@@ -43,17 +46,17 @@ go build
 
 # this creates a executable file in the same directory which can be run with ./FILE
 
-# if the go install dir is on your system path you can install the package so you can run it 
+# if the go install dir is on your system path you can install the package so you can run it
 # anywhere by just using its name
 go install
 
 -- fix formatting issues --
-gofmt -w /folder/main.go 
+gofmt -w /folder/main.go
 
  -- useful notes --
- 
+
  code executed as an application must be in a main package.
- 
+
  # function naming
  function names with upper case - exported and used outside of the package
- function names with lower case - internal use only 
+ function names with lower case - internal use only

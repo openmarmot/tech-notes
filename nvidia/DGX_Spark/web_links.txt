@@ -29,6 +29,9 @@ https://github.com/eugr/spark-vllm-docker
 # Eugr's spark clustering guide
 https://github.com/eugr/spark-vllm-docker/blob/main/docs/NETWORKING.md
 
+# Heavily optimized 1 spark Gemma 4 setup
+https://github.com/AEON-7/Gemma-4-26B-A4B-it-Uncensored-NVFP4
+
 # -- UnSloth --
 # unsloth ui with llama.cpp backend
 https://unsloth.ai/docs/new/studio
