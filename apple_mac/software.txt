@@ -1,0 +1,6 @@
+
+# aws cli
+brew install awscli
+
+# db browser for sqlite
+brew install db-browser-for-sqlite
