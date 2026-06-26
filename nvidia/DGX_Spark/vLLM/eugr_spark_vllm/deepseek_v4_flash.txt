@@ -1,0 +1,14 @@
+run deepseek v4 flash on 2x dgx spark
+
+ref :
+https://forums.developer.nvidia.com/t/deepseek-v4-flash-aiden-recipe-from-reddit-1m-token-session-operational-cuda-12-1-tailored-for-dgx-spark-gb10/372268/140
+
+https://github.com/eugr/spark-vllm-docker/blob/main/recipes/deepseek-v4-flash.yaml
+
+----------------------
+
+# commands
+git pull
+./build-and-copy.sh -c
+./hf-download.sh deepseek-ai/DeepSeek-V4-Flash -c
+./run-recipe.sh deepseek-v4-flash --no-ray

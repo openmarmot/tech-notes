@@ -15,7 +15,7 @@
 
 # --------- Models ----------------------
 
-
+# this is a good model for image input without using a lot of memory
 
 # ~ 49 t/s
 HF_MODEL="unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q4_K_XL"
