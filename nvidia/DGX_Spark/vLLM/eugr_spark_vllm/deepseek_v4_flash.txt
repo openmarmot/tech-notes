@@ -9,6 +9,6 @@ https://github.com/eugr/spark-vllm-docker/blob/main/recipes/deepseek-v4-flash.ya
 
 # commands
 git pull
-./build-and-copy.sh -c
+./build-and-copy.sh --cleanup -c
 ./hf-download.sh deepseek-ai/DeepSeek-V4-Flash -c
 ./run-recipe.sh deepseek-v4-flash --no-ray

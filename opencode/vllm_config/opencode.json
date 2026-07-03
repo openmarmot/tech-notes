@@ -48,8 +48,29 @@
             "input": 0,
             "output": 0
           }
+        },
+        "deepseek-ai/DeepSeek-V4-Flash": {
+          "name": "local DeepSeek v4-Flash",
+          "limit": {
+            "context": 500000,
+            "input": 500000,
+            "output": 32768
+          },
+          "modalities": {
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 0,
+            "output": 0
+          }
         }
       }
     }
   },
-  "model": "vLLM/Qwen/Qwen3.5-122B-A10B-FP8"
+  "model": "vLLM/deepseek-ai/DeepSeek-V4-Flash"
+}
