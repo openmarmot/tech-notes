@@ -18,6 +18,10 @@ go mod init example.com/greetings
 -- update the mod file --
 
 # optionally update all dependencies to their latest minor versions
+go get -u -t ./...
+
+# optionall update all dependencies to their latest MAJOR versions
+
 
 # adds the dependencies the code needs that are not yet in .mod file
 go mod tidy

@@ -3,3 +3,10 @@ put config in ./config/opencode/opencode.json
 
 # start web ui
 opencode web --port 8000 --hostname 0.0.0.0
+
+
+# opencode maintains this database of model info. very useful when defining model config in the json file
+https://github.com/anomalyco/models.dev
+
+# opencode.json schema
+https://opencode.ai/config.json

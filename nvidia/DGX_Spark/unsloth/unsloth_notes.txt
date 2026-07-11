@@ -1,0 +1,5 @@
+Unsloth + DGX Spark Notes
+
+https://unsloth.ai/docs/blog/fine-tuning-llms-with-nvidia-dgx-spark-and-unsloth
+
+https://build.nvidia.com/spark/unsloth/instructions
