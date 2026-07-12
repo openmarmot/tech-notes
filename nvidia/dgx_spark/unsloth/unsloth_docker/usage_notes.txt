@@ -28,7 +28,7 @@ docker run -it \
 -- initial setup ----------------------------
 curl -fsSL https://unsloth.ai/install.sh | sh
 source ~/.bashrc
-unsloth studio -H 0.0.0.0 -p 8888
+unsloth studio -H 0.0.0.0 -p 8888 --no-cloudflare
 
 -- start / stop / connect --------------------------
 
