@@ -1,0 +1,42 @@
+Unsloth Docker for DGX Spark usage notes
+
+As of July 12 2026 the unsloth install basically "just works" with the nvidia container
+
+-- reference -------------------------------
+https://unsloth.ai/docs/blog/fine-tuning-llms-with-nvidia-dgx-spark-and-unsloth
+https://build.nvidia.com/spark/unsloth/instructions
+
+
+-- initial run ----------------------------
+
+# first cd to the folder where you store all your stuff.
+
+docker run -it \
+    --gpus=all \
+    --net=host \
+    --ipc=host \
+    --ulimit memlock=-1 \
+    --ulimit stack=67108864 \
+    -v $(pwd):$(pwd) \
+    -v $HOME/.cache/huggingface:/root/.cache/huggingface \
+    -w $(pwd) \
+    -p 8888:8888 \
+    --name unsloth-spark \
+    nvcr.io/nvidia/pytorch:25.11-py3
+
+
+-- initial setup ----------------------------
+curl -fsSL https://unsloth.ai/install.sh | sh
+source ~/.bashrc
+unsloth studio -H 0.0.0.0 -p 8888
+
+-- start / stop / connect --------------------------
+
+# start
+docker start -i unsloth-spark
+
+# stop
+dock stop unsloth-spark
+
+# attach
+docker attach unsloth-spark
