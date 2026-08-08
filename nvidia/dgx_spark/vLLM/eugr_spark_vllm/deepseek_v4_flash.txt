@@ -1,14 +1,52 @@
 run deepseek v4 flash on 2x dgx spark
 
 ref :
-https://forums.developer.nvidia.com/t/deepseek-v4-flash-aiden-recipe-from-reddit-1m-token-session-operational-cuda-12-1-tailored-for-dgx-spark-gb10/372268/140
-
-https://github.com/eugr/spark-vllm-docker/blob/main/recipes/deepseek-v4-flash.yaml
+https://github.com/eugr/spark-vllm-docker/blob/main/recipes/deepseek-v4-flash-0731.yaml
 
 ----------------------
 
 # commands
+export HF_TOKEN=""
 git pull
 ./build-and-copy.sh --cleanup -c
-./hf-download.sh deepseek-ai/DeepSeek-V4-Flash -c
-./run-recipe.sh deepseek-v4-flash --no-ray
+./run-recipe.sh deepseek-v4-flash-0731
+
+
+--------------------------------------------------
+~/.config/opencode/opencode.jsonc
+
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "vLLM": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "vLLM (local)",
+      "options": {
+        "baseURL": "http://10.12.0.50:8000/v1"
+      },
+      "models": {
+        "deepseek-ai/DeepSeek-V4-Flash-0731": {
+          "name": "local DeepSeek v4-Flash-0731",
+          "reasoning": true,
+          "limit": {
+            "context": 1000000,
+            "output": 384000,
+          },
+          "modalities": {
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 0,
+            "output": 0
+          }
+        }
+      }
+    }
+  },
+  "model": "vLLM/deepseek-ai/DeepSeek-V4-Flash-0731"
+}
