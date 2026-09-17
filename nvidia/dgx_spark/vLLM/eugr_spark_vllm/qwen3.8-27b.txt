@@ -1,0 +1,71 @@
+# ref
+https://github.com/eugr/spark-vllm-docker/blob/main/recipes/qwen3.8-27b-nvfp4-dflash2.yaml
+https://github.com/anomalyco/models.dev/blob/dev/models/alibaba/qwen3.8-27b.toml
+
+
+# commands
+export HF_TOKEN=""
+git pull
+./build-and-copy.sh --cleanup -c
+# for one dgx spark
+./run-recipe.sh qwen3.8-27b-nvfp4-dflash2.yaml --solo --setup
+
+
+# -- Benchmarks --
+# benchmark with llama-benchy
+uvx llama-benchy --base-url http://10.12.0.50:8000/v1 --model RadixArk/Qwen3.8-27B-NVFP4 --depth 0 4096 8192 16384 32768 --concurrency 1
+
+# Sept 6 2026
+| model                      |            test |             t/s |      peak t/s |         ttfr (ms) |      est_ppt (ms) |     e2e_ttft (ms) |
+|:---------------------------|----------------:|----------------:|--------------:|------------------:|------------------:|------------------:|
+| RadixArk/Qwen3.8-27B-NVFP4 |          pp2048 | 1322.01 ± 15.14 |               |   1552.99 ± 17.16 |   1549.60 ± 17.16 |   1552.99 ± 17.16 |
+| RadixArk/Qwen3.8-27B-NVFP4 |            tg32 |    30.96 ± 3.94 |  32.72 ± 3.11 |                   |                   |                   |
+| RadixArk/Qwen3.8-27B-NVFP4 |  pp2048 @ d4096 |  1366.99 ± 2.51 |               |    4498.45 ± 8.06 |    4495.06 ± 8.06 |    4498.45 ± 8.06 |
+| RadixArk/Qwen3.8-27B-NVFP4 |    tg32 @ d4096 |   28.27 ± 13.39 | 29.89 ± 13.29 |                   |                   |                   |
+| RadixArk/Qwen3.8-27B-NVFP4 |  pp2048 @ d8192 | 1323.88 ± 10.43 |               |   7739.19 ± 61.05 |   7735.80 ± 61.05 |   7739.19 ± 61.05 |
+| RadixArk/Qwen3.8-27B-NVFP4 |    tg32 @ d8192 |    25.92 ± 5.34 |  27.08 ± 3.67 |                   |                   |                   |
+| RadixArk/Qwen3.8-27B-NVFP4 | pp2048 @ d16384 |  1205.21 ± 8.13 |               | 15298.27 ± 102.67 | 15294.88 ± 102.67 | 15298.27 ± 102.67 |
+| RadixArk/Qwen3.8-27B-NVFP4 |   tg32 @ d16384 |    30.45 ± 3.98 |  31.05 ± 4.15 |                   |                   |                   |
+| RadixArk/Qwen3.8-27B-NVFP4 | pp2048 @ d32768 |  1089.06 ± 6.78 |               | 31974.50 ± 200.17 | 31971.11 ± 200.17 | 31974.50 ± 200.17 |
+| RadixArk/Qwen3.8-27B-NVFP4 |   tg32 @ d32768 |    27.57 ± 5.42 |  29.47 ± 4.67 |
+
+
+--------------------------------------------------
+~/.config/opencode/opencode.jsonc
+
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "vLLM": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "vLLM (local)",
+      "options": {
+        "baseURL": "http://10.12.0.50:8000/v1"
+      },
+      "models": {
+        "RadixArk/Qwen3.8-27B-NVFP4": {
+          "name": "local Qwen 3.8 27b NVFP4",
+          "reasoning": true,
+          "limit": {
+            "context": 262144,
+            "output": 32768
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 0,
+            "output": 0
+          }
+        }
+      }
+    }
+  },
+  "model": "vLLM/deepseek-ai/DeepSeek-V4-Flash-0731"
+}
