@@ -1,0 +1,8 @@
+
+./hf-download.sh deepseek-ai/DeepSeek-V4-Flash-Vision-Exp -c --copy-parallel
+./run-recipe.sh deepseek-v4-flash-vision-exp
+
+
+# -- Benchmarks --
+# benchmark with llama-benchy
+uvx llama-benchy --base-url http://10.12.0.50:8000/v1 --model deepseek-ai/DeepSeek-V4-Flash-Vision-Exp --depth 0 4096 8192 16384 32768 --concurrency 1

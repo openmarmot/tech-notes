@@ -1,0 +1,41 @@
+
+
+--------------------------------------------------
+~/.config/opencode/opencode.jsonc
+
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "vLLM": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "vLLM (local)",
+      "options": {
+        "baseURL": "http://10.12.0.50:8000/v1"
+      },
+      "models": {
+        "local-inference-lab/GLM-5.3-Flash-NVFP4-Spark": {
+          "name": "local GLM-5.3-Flash NVFP4",
+          "reasoning": true,
+          "limit": {
+            "context": 500000,
+            "output": 32768
+          },
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "cost": {
+            "input": 0,
+            "output": 0
+          }
+        }
+      }
+    }
+  },
+  "model": "vLLM/deepseek-ai/DeepSeek-V4-Flash-0731"
+}

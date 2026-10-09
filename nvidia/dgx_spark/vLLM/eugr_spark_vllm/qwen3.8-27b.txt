@@ -30,6 +30,13 @@ uvx llama-benchy --base-url http://10.12.0.50:8000/v1 --model RadixArk/Qwen3.8-2
 | RadixArk/Qwen3.8-27B-NVFP4 |   tg32 @ d32768 |    27.57 ± 5.42 |  29.47 ± 4.67 |
 
 
+# benchmark the nvidia version
+uvx llama-benchy --base-url http://10.12.0.50:8000/v1 --model nvidia/Qwen3.8-27B-NVFP4 --depth 0 4096 8192 16384 32768 --concurrency 1
+
+sept 20
+
+
+
 --------------------------------------------------
 ~/.config/opencode/opencode.jsonc
 
