@@ -1,8 +1,13 @@
 Opencode Notes
 put config in ./config/opencode/opencode.json
 
-# start web ui
-opencode web --port 8000 --hostname 0.0.0.0
+# new v2 web ui for remote server
+opencode service set hostname 0.0.0.0
+opencode service set port 8000
+opencode service start
+
+# then to connect to either local or remote opencode simply
+opencode pair
 
 
 # opencode maintains this database of model info. very useful when defining model config in the json file
